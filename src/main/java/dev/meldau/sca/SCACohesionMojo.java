@@ -65,6 +65,14 @@ public class SCACohesionMojo extends AbstractMojo {
         /* Maven Log Variable */
         myLog = this.getLog();
 
+        // Create Directories if they don't exist
+        for (File f : new File[] {scaOutputDir, scaOutputDir}) {
+            if (!f.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                f.mkdir();
+            }
+        }
+
         /* Result Variable */
         Map<String, Integer> lcomScores;
 
