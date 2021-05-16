@@ -74,6 +74,8 @@ public class SCACouplingMojo extends AbstractMojo {
           new CouplingMultiGraphGenerator(new File(outputDirectory.getAbsolutePath() + "/classes"));
       DirectedMultigraph<String, LabeledEdge> couplingMultiGraph =
           couplingMultiGraphGenerator.getGraph();
+      // Save graph as DOT File and Image for reporting
+      couplingMultiGraphGenerator.saveGraph(scaOutputDir);
 
       CBOCalculator cboCalculator = new CBOCalculator(couplingMultiGraph);
       CBOValues = cboCalculator.calculateCBO();

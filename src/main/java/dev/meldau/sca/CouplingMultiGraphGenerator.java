@@ -1,32 +1,37 @@
 package dev.meldau.sca;
 
+import guru.nidi.graphviz.engine.Format;
+import guru.nidi.graphviz.engine.Graphviz;
+import guru.nidi.graphviz.model.MutableGraph;
+import guru.nidi.graphviz.parse.Parser;
 import org.apache.commons.collections4.CollectionUtils;
 import org.jgrapht.graph.DirectedMultigraph;
+import org.jgrapht.nio.Attribute;
+import org.jgrapht.nio.DefaultAttribute;
+import org.jgrapht.nio.dot.DOTExporter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class CouplingMultiGraphGenerator {
 
   ArrayList<File> classFiles;
 
-  public CouplingMultiGraphGenerator(File classDir) throws FileNotFoundException {
+  DirectedMultigraph<String, LabeledEdge> couplingGraph;
+
+  public CouplingMultiGraphGenerator(File classDir) throws IOException {
 
     ClassFileFinder classFileFinder = new ClassFileFinder(classDir);
     classFiles = classFileFinder.getClassFiles();
+    generateGraph();
   }
 
-  private String cleanInternalName(String toClean) {
-    String cleanString = toClean.replaceAll("^\\[*[A-Z]", "");
-    cleanString = cleanString.replaceAll("$.*", "");
-    cleanString = cleanString.replaceAll(";$", "");
-    return cleanString;
-  }
-
-  public DirectedMultigraph<String, LabeledEdge> getGraph() throws IOException {
+  private void generateGraph() throws IOException {
 
     DirectedMultigraph<String, LabeledEdge> couplingGraph =
         new DirectedMultigraph<>(LabeledEdge.class);
@@ -132,7 +137,8 @@ public class CouplingMultiGraphGenerator {
           }
         }
         // check for local Variables
-        for (LocalVariableNode myLocalVariableNode : CollectionUtils.emptyIfNull(method.localVariables)) {
+        for (LocalVariableNode myLocalVariableNode :
+            CollectionUtils.emptyIfNull(method.localVariables)) {
           // myLog.debug("Local Variable Name: " + myLocalVariableNode.name);
           // myLog.debug("Local Variable Type: " + cleanInternalName(myLocalVariableNode.desc));
           if (!cleanInternalName(myLocalVariableNode.desc).startsWith("java/")
@@ -170,6 +176,43 @@ public class CouplingMultiGraphGenerator {
       }
     }
 
+    this.couplingGraph = couplingGraph;
+  }
+
+  private String cleanInternalName(String toClean) {
+    String cleanString = toClean.replaceAll("^\\[*[A-Z]", "");
+    cleanString = cleanString.replaceAll("$.*", "");
+    cleanString = cleanString.replaceAll(";$", "");
+    return cleanString;
+  }
+
+  public void saveGraph(File targetDir)
+      throws IOException {
+    DOTExporter<String, LabeledEdge> dotExporter =
+        new DOTExporter<>(v -> v.replace("/", "_").replace("$", "_"));
+    dotExporter.setEdgeAttributeProvider(
+        labeledEdge -> {
+          Map<String, Attribute> map = new LinkedHashMap<>();
+          map.put("label", DefaultAttribute.createAttribute("" + labeledEdge.getConnectionType()));
+          return map;
+        });
+    dotExporter.exportGraph(couplingGraph, new FileWriter(targetDir.getAbsolutePath()+"/coupling_graph.dot"));
+
+    try (InputStream dot = new FileInputStream(targetDir.getAbsolutePath()+"/coupling_graph.dot")) {
+      MutableGraph g = new Parser().read(dot);
+
+      // "Why don't you use g.edges() from the library?" you might ask. Because it is not working
+      // for multigraphs is why...
+      g.nodes().forEach(node -> node.links().forEach(link -> link.attrs().add()));
+      Graphviz.fromGraph(g).render(Format.PNG).toFile(new File(targetDir.getAbsolutePath()+"/coupling_graph.png"));
+    }
+
+
+
+
+  }
+
+  public DirectedMultigraph<String, LabeledEdge> getGraph() throws IOException {
     return couplingGraph;
   }
 }
