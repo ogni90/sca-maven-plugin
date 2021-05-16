@@ -1,5 +1,6 @@
 package dev.meldau.sca;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.jgrapht.graph.DirectedMultigraph;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
@@ -64,7 +65,7 @@ public class CouplingMultiGraphGenerator {
       }
 
       // check for instance variables
-      for (FieldNode field : myClassNode.fields) {
+      for (FieldNode field : CollectionUtils.emptyIfNull(myClassNode.fields)) {
         // myLog.debug("Field Name: " + field.name);
         // myLog.debug("Field Type: " + cleanInternalName(field.desc));
         if (!cleanInternalName(field.desc).startsWith("java/")
@@ -80,7 +81,7 @@ public class CouplingMultiGraphGenerator {
       }
 
       // check for method calls
-      for (MethodNode method : myClassNode.methods) {
+      for (MethodNode method : CollectionUtils.emptyIfNull(myClassNode.methods)) {
         // myLog.debug("Looking at " + method.name + " in " + myClassReader.getClassName());
         for (AbstractInsnNode ain : method.instructions.toArray()) {
           if (ain.getType() == AbstractInsnNode.METHOD_INSN) {
@@ -131,7 +132,7 @@ public class CouplingMultiGraphGenerator {
           }
         }
         // check for local Variables
-        for (LocalVariableNode myLocalVariableNode : method.localVariables) {
+        for (LocalVariableNode myLocalVariableNode : CollectionUtils.emptyIfNull(method.localVariables)) {
           // myLog.debug("Local Variable Name: " + myLocalVariableNode.name);
           // myLog.debug("Local Variable Type: " + cleanInternalName(myLocalVariableNode.desc));
           if (!cleanInternalName(myLocalVariableNode.desc).startsWith("java/")
