@@ -1,5 +1,7 @@
 package dev.meldau.sca;
 
+import guru.nidi.graphviz.attribute.Color;
+import guru.nidi.graphviz.attribute.Label;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.MutableGraph;
@@ -203,12 +205,37 @@ public class CouplingMultiGraphGenerator {
 
       // "Why don't you use g.edges() from the library?" you might ask. Because it is not working
       // for multigraphs is why...
-      g.nodes().forEach(node -> node.links().forEach(link -> link.attrs().add()));
+
+      // Color Edges by their Link Type
+      g.nodes().forEach(node -> node.links().forEach(link -> link.add(getLinkColor(link.attrs().get("label").toString())))); //.forEach(attr -> attr.getValue())))));
+
+      // Attempt to replace label with xlabel to avoid overlapping in labels - makes the output worse
+      //g.nodes().forEach(node -> node.links().forEach(link -> link.add(Label.of(link.get("label").toString().toLowerCase()).external())));
+
+      // Remove Label-Text for better viewabilty
+      g.nodes().forEach(node -> node.links().forEach(link -> link.add(Label.of(""))));
+
       Graphviz.fromGraph(g).render(Format.PNG).toFile(new File(targetDir.getAbsolutePath()+"/coupling_graph.png"));
+      Graphviz.fromGraph(g).render(Format.DOT).toFile(new File(targetDir.getAbsolutePath()+"/colored_coupling_graph.dot"));
     }
 
 
 
+
+  }
+
+  private Color getLinkColor(String connectionType) {
+    switch (connectionType) {
+      case "SUPERCLASS": return Color.VIOLET;
+      case "INSTANCE_VARIABLE": return Color.CHOCOLATE;
+      case "CALLS_METHOD": return Color.BLUE;
+      case "LOCAL_VARIABLE": return Color.ORANGE;
+      case "PARAMETER_TYPE": return Color.GREEN;
+      case "ACCESS_PUBLIC_VARIABLE": return Color.RED;
+      default:
+        System.out.println(connectionType);
+        return Color.DARKSALMON;
+    }
 
   }
 
