@@ -7,6 +7,7 @@ import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.parse.Parser;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.maven.plugin.logging.Log;
 import org.jgrapht.graph.DirectedMultigraph;
 import org.jgrapht.nio.Attribute;
 import org.jgrapht.nio.DefaultAttribute;
@@ -26,6 +27,15 @@ public class CouplingMultiGraphGenerator {
 
   DirectedMultigraph<String, LabeledEdge> couplingGraph;
 
+  Log myLog;
+
+  public CouplingMultiGraphGenerator(File classDir, Log myLog) throws IOException {
+    this.myLog = myLog;
+    ClassFileFinder classFileFinder = new ClassFileFinder(classDir);
+    classFiles = classFileFinder.getClassFiles();
+    generateGraph();
+
+  }
   public CouplingMultiGraphGenerator(File classDir) throws IOException {
 
     ClassFileFinder classFileFinder = new ClassFileFinder(classDir);
@@ -52,18 +62,22 @@ public class CouplingMultiGraphGenerator {
 
       // Add classname as vertex to graph
       if (!couplingGraph.vertexSet().contains(myClassReader.getClassName())) {
-        couplingGraph.addVertex(myClassReader.getClassName());
+        couplingGraph.addVertex(cleanInternalName(myClassNode.name));
       }
 
-      // myLog.debug("Looking at Class: " + myClassNode.name);
+      if (myLog != null) {
+        myLog.debug("Looking at Class: " + myClassNode.name);
+      }
 
       // Check for superclass
-      // myLog.debug("SuperClass: " + myClassNode.superName);
+      if (myLog != null) {
+        myLog.debug("SuperClass: " + myClassNode.superName);
+      }
       if (myClassNode.superName != null
           && !myClassNode.superName.equals("java/lang/Object")
           && !myClassNode.superName.equals("")) {
-        if (!couplingGraph.vertexSet().contains(myClassNode.superName)) {
-          couplingGraph.addVertex(myClassNode.superName);
+        if (!couplingGraph.vertexSet().contains(cleanInternalName(myClassNode.superName))) {
+          couplingGraph.addVertex(cleanInternalName(myClassNode.superName));
         }
         couplingGraph.addEdge(
             cleanInternalName(myClassNode.name),
@@ -73,15 +87,18 @@ public class CouplingMultiGraphGenerator {
 
       // check for instance variables
       for (FieldNode field : CollectionUtils.emptyIfNull(myClassNode.fields)) {
-        // myLog.debug("Field Name: " + field.name);
-        // myLog.debug("Field Type: " + cleanInternalName(field.desc));
+        if (myLog != null) {
+          myLog.debug("Field Name: " + field.name);
+          myLog.debug("Field Type: " + field.desc + "(" +  cleanInternalName(field.desc) + ")");
+        }
         if (!cleanInternalName(field.desc).startsWith("java/")
-            && !myClassNode.name.equals(cleanInternalName(field.desc))) {
+            && !cleanInternalName(field.desc).equals("")
+            && !cleanInternalName(myClassNode.name).equals(cleanInternalName(field.desc))) {
           if (!couplingGraph.vertexSet().contains(cleanInternalName(field.desc))) {
             couplingGraph.addVertex(cleanInternalName(field.desc));
           }
           couplingGraph.addEdge(
-              myClassNode.name,
+              cleanInternalName(myClassNode.name),
               cleanInternalName(field.desc),
               new LabeledEdge(LabeledEdge.ConnectionType.INSTANCE_VARIABLE));
         }
@@ -89,67 +106,74 @@ public class CouplingMultiGraphGenerator {
 
       // check for method calls
       for (MethodNode method : CollectionUtils.emptyIfNull(myClassNode.methods)) {
-        // myLog.debug("Looking at " + method.name + " in " + myClassReader.getClassName());
+        if (myLog != null) {
+          myLog.debug("Looking at " + method.name + " in " + myClassReader.getClassName());
+        }
         for (AbstractInsnNode ain : method.instructions.toArray()) {
           if (ain.getType() == AbstractInsnNode.METHOD_INSN) {
             MethodInsnNode methCall = (MethodInsnNode) ain;
-            if (!cleanInternalName(methCall.owner).equals(myClassNode.name)
+            if (!cleanInternalName(methCall.owner).equals(cleanInternalName(myClassNode.name))
+                    && !cleanInternalName(methCall.owner).equals("")
                 && !methCall.owner.startsWith("java/")) {
-              /*
-              myLog.debug(
-                      "Found call from "
-                              + method.name
-                              + " to "
-                              + methCall.owner
-                              + " -> "
-                              + methCall.name);
-               */
-              if (!couplingGraph.vertexSet().contains(methCall.owner)) {
-                couplingGraph.addVertex(methCall.owner);
+              if (myLog != null) {
+                myLog.debug(
+                    "Found call from "
+                        + method.name
+                        + " to "
+                        + methCall.owner
+                        + " -> "
+                        + methCall.name);
               }
-              couplingGraph.addEdge(
-                  myClassNode.name,
-                  cleanInternalName(methCall.owner),
-                  new LabeledEdge(LabeledEdge.ConnectionType.CALLS_METHOD));
+              if (!couplingGraph.vertexSet().contains(cleanInternalName(methCall.owner))) {
+                couplingGraph.addVertex(cleanInternalName(methCall.owner));
+              }
+                couplingGraph.addEdge(
+                    cleanInternalName(myClassNode.name),
+                    cleanInternalName(methCall.owner),
+                    new LabeledEdge(LabeledEdge.ConnectionType.CALLS_METHOD));
             }
           }
 
           // Check for use of public variables
           if (ain.getType() == AbstractInsnNode.FIELD_INSN) {
             FieldInsnNode fieldInsnNode = (FieldInsnNode) ain;
-            if (!cleanInternalName(fieldInsnNode.owner).equals(myClassNode.name)
+            if (!cleanInternalName(fieldInsnNode.owner).equals(cleanInternalName(myClassNode.name))
+                    && !cleanInternalName(fieldInsnNode.owner).equals("")
                 && !fieldInsnNode.owner.startsWith("java/")) {
-              /*
-              myLog.debug(
-                      "Found use of public Variable of other Class in "
-                              + method.name
-                              + " Class "
-                              + fieldInsnNode.owner
-                              + " name "
-                              + fieldInsnNode.name);
-              */
-              if (!couplingGraph.vertexSet().contains(fieldInsnNode.owner)) {
-                couplingGraph.addVertex(fieldInsnNode.owner);
+              if (myLog != null) {
+                myLog.debug(
+                    "Found use of public Variable of other Class in "
+                        + method.name
+                        + " Class "
+                        + fieldInsnNode.owner
+                        + " name "
+                        + fieldInsnNode.name);
               }
-              couplingGraph.addEdge(
-                  cleanInternalName(myClassNode.name),
-                  cleanInternalName(fieldInsnNode.owner),
-                  new LabeledEdge(LabeledEdge.ConnectionType.ACCESS_PUBLIC_VARIABLE));
-            }
+              if (!couplingGraph.vertexSet().contains(cleanInternalName(fieldInsnNode.owner))) {
+                couplingGraph.addVertex(cleanInternalName(fieldInsnNode.owner));
+              }
+                couplingGraph.addEdge(
+                    cleanInternalName(myClassNode.name),
+                    cleanInternalName(fieldInsnNode.owner),
+                    new LabeledEdge(LabeledEdge.ConnectionType.ACCESS_PUBLIC_VARIABLE));
+              }
           }
         }
         // check for local Variables
         for (LocalVariableNode myLocalVariableNode :
             CollectionUtils.emptyIfNull(method.localVariables)) {
-          // myLog.debug("Local Variable Name: " + myLocalVariableNode.name);
-          // myLog.debug("Local Variable Type: " + cleanInternalName(myLocalVariableNode.desc));
+          if (myLog != null) {
+            myLog.debug("Local Variable Name: " + myLocalVariableNode.name);
+            myLog.debug("Local Variable Type: " + cleanInternalName(myLocalVariableNode.desc));
+          }
           if (!cleanInternalName(myLocalVariableNode.desc).startsWith("java/")
-              && !cleanInternalName(myLocalVariableNode.desc).equals(myClassNode.name)) {
+                  && !cleanInternalName(myLocalVariableNode.desc).equals("")
+              && !cleanInternalName(myLocalVariableNode.desc).equals(cleanInternalName(myClassNode.name))) {
             if (!couplingGraph.vertexSet().contains(cleanInternalName(myLocalVariableNode.desc))) {
               couplingGraph.addVertex(cleanInternalName(myLocalVariableNode.desc));
             }
             couplingGraph.addEdge(
-                myClassNode.name,
+                cleanInternalName(myClassNode.name),
                 cleanInternalName(myLocalVariableNode.desc),
                 new LabeledEdge(LabeledEdge.ConnectionType.LOCAL_VARIABLE));
           }
@@ -158,11 +182,13 @@ public class CouplingMultiGraphGenerator {
         // check for method Parameter Types
         Type[] parameterTypes = Type.getArgumentTypes(method.desc);
         for (Type parameterType : parameterTypes) {
-          // myLog.debug(
-          //        "Parameter internalName: " +
-          // cleanInternalName(parameterType.getInternalName()));
+          if (myLog != null) {
+            myLog.debug(
+                "Parameter internalName: " + cleanInternalName(parameterType.getInternalName()));
+          }
 
-          if (!cleanInternalName(parameterType.getInternalName()).equals(myClassNode.name)
+          if (!cleanInternalName(parameterType.getInternalName()).equals(cleanInternalName(myClassNode.name))
+                  && !cleanInternalName(parameterType.getInternalName()).equals("")
               && !cleanInternalName(parameterType.getInternalName()).startsWith("java/")) {
             if (!couplingGraph
                 .vertexSet()
@@ -170,7 +196,7 @@ public class CouplingMultiGraphGenerator {
               couplingGraph.addVertex(cleanInternalName(parameterType.getInternalName()));
             }
             couplingGraph.addEdge(
-                myClassNode.name,
+                cleanInternalName(myClassNode.name),
                 cleanInternalName(parameterType.getInternalName()),
                 new LabeledEdge(LabeledEdge.ConnectionType.PARAMETER_TYPE));
           }
@@ -183,7 +209,7 @@ public class CouplingMultiGraphGenerator {
 
   private String cleanInternalName(String toClean) {
     String cleanString = toClean.replaceAll("^\\[*[A-Z]", "");
-    cleanString = cleanString.replaceAll("\\$.*", "");
+    cleanString = cleanString.replaceAll("\\$", "_");
     cleanString = cleanString.replaceAll(";$", "");
     return cleanString;
   }

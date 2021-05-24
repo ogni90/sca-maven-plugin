@@ -2,7 +2,6 @@ package dev.meldau.sca;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -66,7 +65,7 @@ public class SCACohesionMojo extends AbstractMojo {
         myLog = this.getLog();
 
         // Create Directories if they don't exist
-        for (File f : new File[] {scaOutputDir, scaOutputDir}) {
+        for (File f : new File[] {outputDirectory, scaOutputDir}) {
             if (!f.exists()) {
                 //noinspection ResultOfMethodCallIgnored
                 f.mkdir();
@@ -79,7 +78,8 @@ public class SCACohesionMojo extends AbstractMojo {
         ClassFileFinder classFileFinder = new ClassFileFinder(new File(outputDirectory.getAbsolutePath() + "/classes"  ));
         try {
             LCOMScoreCalculator lcomScoreCalculator = new LCOMScoreCalculator(classFileFinder.getClassFiles());
-            lcomScores = lcomScoreCalculator.getScores();
+            lcomScores = lcomScoreCalculator.getLCOMScores();
+            lcomScoreCalculator.saveGraph(scaOutputDir);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             throw new MojoExecutionException("Output directory does not exist.");

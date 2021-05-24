@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -101,24 +102,24 @@ public class SCAReportingMojo extends AbstractMavenReport {
       if (classEntry.getValue() < 1) {
         continue;
       }
-      //      String imageFileName = classEntry.getKey().replace("/", "_") + "_graph.png";
-      //      File imageFile = new File(scaOutputDir.getAbsolutePath() + "/" + imageFileName);
-      //      File linkImageFile =
-      //              new File(outputDirectory.getAbsolutePath() + "/../sca-output/" +
-      // imageFileName);
-      //      try {
-      //        if (imageFile.exists()) {
-      //          if (!imageFile.delete()) {
-      //            throw new MavenReportException(
-      //                    "Couldn't delete old version of image: " + imageFile.getAbsoluteFile());
-      //          }
-      //        }
-      //        Files.createLink(
-      //                imageFile.getAbsoluteFile().toPath(),
-      // linkImageFile.getAbsoluteFile().toPath());
-      //      } catch (IOException e) {
-      //        e.printStackTrace();
-      //      }
+            String imageFileName = classEntry.getKey().replace("/", "_") + "_lcom_graph.png";
+            File imageFile = new File(outputDirectory.getAbsolutePath() + "/" + imageFileName);
+            myLog.debug("Path for ImageFile: " + imageFile.getAbsoluteFile());
+            File linkImageFile =
+                    new File(scaOutputDir.getAbsolutePath() + "/" + imageFileName);
+            try {
+              if (imageFile.exists()) {
+                if (!imageFile.delete()) {
+                  throw new MavenReportException(
+                          "Couldn't delete old version of image: " + imageFile.getAbsoluteFile());
+                }
+              }
+              Files.createLink(
+                      imageFile.getAbsoluteFile().toPath(),
+       linkImageFile.getAbsoluteFile().toPath());
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
 
       myLog.debug("Cohesion Score for " + classEntry.getKey() + ": " + classEntry.getValue());
       String[] splitClassName = classEntry.getKey().split("/");
@@ -130,7 +131,7 @@ public class SCAReportingMojo extends AbstractMavenReport {
       mainSink.text("LCOM Score: " + classEntry.getValue());
       mainSink.paragraph_();
       mainSink.figure();
-      //      mainSink.figureGraphics("cohesion-report/" + imageFileName);
+      mainSink.figureGraphics(imageFileName);
       mainSink.figure_();
     }
     mainSink.body_();

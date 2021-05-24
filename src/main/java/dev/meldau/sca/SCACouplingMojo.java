@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 
 @Mojo(name = "sca-coupling", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
 public class SCACouplingMojo extends AbstractMojo {
@@ -71,7 +70,7 @@ public class SCACouplingMojo extends AbstractMojo {
 
     try {
       CouplingMultiGraphGenerator couplingMultiGraphGenerator =
-          new CouplingMultiGraphGenerator(new File(outputDirectory.getAbsolutePath() + "/classes"));
+          new CouplingMultiGraphGenerator(new File(outputDirectory.getAbsolutePath() + "/classes"), myLog);
       DirectedMultigraph<String, LabeledEdge> couplingMultiGraph =
           couplingMultiGraphGenerator.getGraph();
       // Save graph as DOT File and Image for reporting
