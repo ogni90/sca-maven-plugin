@@ -181,7 +181,7 @@ public class CouplingMultiGraphGenerator {
 
   private String cleanInternalName(String toClean) {
     String cleanString = toClean.replaceAll("^\\[*[A-Z]", "");
-    cleanString = cleanString.replaceAll("$.*", "");
+    cleanString = cleanString.replaceAll("\\$.*", "");
     cleanString = cleanString.replaceAll(";$", "");
     return cleanString;
   }
@@ -189,7 +189,7 @@ public class CouplingMultiGraphGenerator {
   public void saveGraph(File targetDir)
       throws IOException {
     DOTExporter<String, LabeledEdge> dotExporter =
-        new DOTExporter<>(v -> v.replace("/", "_").replace("$", "_"));
+        new DOTExporter<>(v -> v.replace("/", "_"));
     dotExporter.setEdgeAttributeProvider(
         labeledEdge -> {
           Map<String, Attribute> map = new LinkedHashMap<>();
