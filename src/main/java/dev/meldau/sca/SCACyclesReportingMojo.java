@@ -20,8 +20,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-@Mojo(name = "sca-report", defaultPhase = LifecyclePhase.SITE, threadSafe = true)
-public class SCAReportingMojo extends AbstractMavenReport {
+@Mojo(name = "sca-cycles-report", defaultPhase = LifecyclePhase.SITE, threadSafe = true)
+public class SCACyclesReportingMojo extends AbstractMavenReport {
 
   @Parameter(
       defaultValue = "${project.reporting.outputDirectory}",
@@ -124,6 +124,7 @@ public class SCAReportingMojo extends AbstractMavenReport {
       myLog.debug("Cohesion Score for " + classEntry.getKey() + ": " + classEntry.getValue());
       String[] splitClassName = classEntry.getKey().split("/");
       String shortClassName = splitClassName[splitClassName.length - 1];
+      mainSink.section1();
       mainSink.sectionTitle1();
       mainSink.text("Report for class " + shortClassName + ":");
       mainSink.sectionTitle1_();
@@ -133,6 +134,7 @@ public class SCAReportingMojo extends AbstractMavenReport {
       mainSink.figure();
       mainSink.figureGraphics(imageFileName);
       mainSink.figure_();
+      mainSink.section1_();
     }
     mainSink.body_();
   }

@@ -260,7 +260,7 @@ public class CouplingMultiGraphGenerator {
       case "ACCESS_PUBLIC_VARIABLE": return Color.RED;
       default:
         System.out.println(connectionType);
-        return Color.DARKSALMON;
+        return Color.BLACK;
     }
 
   }
