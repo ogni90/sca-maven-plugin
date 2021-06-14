@@ -1,6 +1,5 @@
 package dev.meldau.sca;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +15,7 @@ class LCOMScoreCalculatorTest {
   LCOMScoreCalculator lcomScoreCalculator;
 
   @BeforeEach
-  void setUp() throws FileNotFoundException {
+  void setUp() throws IOException {
     ClassFileFinder classFileFinder =
         new ClassFileFinder(new File("src/test/resources/ClassesWithCycle/"));
     lcomScoreCalculator = new LCOMScoreCalculator(classFileFinder.getClassFiles());
@@ -24,8 +23,10 @@ class LCOMScoreCalculatorTest {
 
   @Test
   void getScores() throws IOException {
-     final Map<String, Integer> LCOMScores = lcomScoreCalculator.getScores();
+     final Map<String, Integer> LCOMScores = lcomScoreCalculator.getLCOMScores();
       assertEquals(2, (int) LCOMScores.get("dev/meldau/myjavamvntest/App"));
       assertEquals(2, (int) LCOMScores.get("dev/meldau/myjavamvntest/SuperThing"));
   }
+
+
 }
