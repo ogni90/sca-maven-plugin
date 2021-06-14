@@ -13,6 +13,7 @@ import org.json.simple.JSONValue;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 @Mojo(name = "sca-coupling", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
@@ -42,7 +43,7 @@ public class SCACouplingMojo extends AbstractMojo {
     }
   }
 
-  void savePairCBOResultJSON(HashMap<String, Integer> myCBOScores) throws MojoExecutionException {
+  void savePairCBOResultJSON(HashMap<ArrayList<String>, Integer> myCBOScores) throws MojoExecutionException {
     String myPath = scaOutputDir.getAbsolutePath() + "/sca-coupling-pair-cbo-results.json";
     myLog.info("Writing Results JSON: " + myPath);
 
@@ -66,7 +67,7 @@ public class SCACouplingMojo extends AbstractMojo {
     }
 
     HashMap<String,HashMap<String,Integer>> CBOValues;
-    HashMap<String, Integer> PairCBOValues;
+    HashMap<ArrayList<String>, Integer> PairCBOValues;
 
     try {
       CouplingMultiGraphGenerator couplingMultiGraphGenerator =
