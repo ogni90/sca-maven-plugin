@@ -1,6 +1,8 @@
 package dev.meldau.sca;
 
 import org.apache.maven.doxia.sink.Sink;
+import org.apache.maven.doxia.sink.SinkEventAttributes;
+import org.apache.maven.doxia.sink.impl.SinkEventAttributeSet;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -16,9 +18,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
+
+import static org.apache.maven.doxia.sink.Sink.JUSTIFY_LEFT;
 
 @Mojo(name = "sca-coupling-pair-cbo-report", defaultPhase = LifecyclePhase.SITE, threadSafe = true)
 public class SCACouplingPairCBOReportingMojo extends AbstractMavenReport {
@@ -28,6 +30,7 @@ public class SCACouplingPairCBOReportingMojo extends AbstractMavenReport {
       readonly = true,
       required = true)
   protected File outputDirectory;
+
   @Parameter(defaultValue = "${project}", readonly = true, required = true)
   private MavenProject project;
   /** sca output Directory */
@@ -63,16 +66,20 @@ public class SCACouplingPairCBOReportingMojo extends AbstractMavenReport {
 
     // Read JSON Results from previous cohesion run
     JSONParser jsonParser = new JSONParser();
-    Map<String, Long> myMap = null;
+    ArrayList<ArrayList<String>> pairCBOList = null;
     try {
-      File cohesionJSONFile =
-          new File(scaOutputDir.getAbsolutePath() + "/sca-cohesion-results.json");
-      FileReader cohesionJSONFileReader = new FileReader(cohesionJSONFile);
-      myMap = (HashMap<String, Long>) jsonParser.parse(cohesionJSONFileReader);
-      myLog.info("Map:" + myMap);
+      File couplingCBOJSONFile =
+          new File(scaOutputDir.getAbsolutePath() + "/sca-coupling-pair-cbo-results.json");
+      if (!couplingCBOJSONFile.isFile()) {
+        myLog.info("No result File. Skipping Pair CBO results report...");
+        return;
+      }
+      FileReader couplingCBOJSONFileReader = new FileReader(couplingCBOJSONFile);
+      pairCBOList = (ArrayList<ArrayList<String>>) jsonParser.parse(couplingCBOJSONFileReader);
+      myLog.info("Array:" + pairCBOList);
     } catch (FileNotFoundException e) {
       myLog.error(
-          "Problems reading sca-output/sca-cohesion-output.json. Did you run the sca-cohesion target first?");
+          "Problems reading sca-output/sca-coupling-cbo-results.json Did you run the sca-cohesion target first?");
       e.printStackTrace();
     } catch (ParseException | IOException e) {
       e.printStackTrace();
@@ -89,64 +96,102 @@ public class SCACouplingPairCBOReportingMojo extends AbstractMavenReport {
     // Header incl. Title
     mainSink.head();
     mainSink.title();
-    mainSink.text("SCA Report");
+    mainSink.text("SCA Coupling Pair CBO Report");
     mainSink.title_();
     mainSink.head_();
 
     mainSink.body();
 
-    // Average, best and worst score
+    /*
+     case "SUPERCLASS": return Color.VIOLET;
+     case "INSTANCE_VARIABLE": return Color.CHOCOLATE;
+     case "CALLS_METHOD": return Color.BLUE;
+     case "LOCAL_VARIABLE": return Color.ORANGE;
+     case "PARAMETER_TYPE": return Color.GREEN;
+     case "ACCESS_PUBLIC_VARIABLE": return Color.RED;
+     default:
+    */
+    String[][] colorLegend = {
+      {"Superclass", "Violet"},
+      {"Instance Variable", "Chocolate"},
+      {"Calls Method", "Blue"},
+      {"Local Variable", "Orange"},
+      {"Parameter Type", "Green"},
+      {"Access Public Variable", "Red"},
+    };
 
-    for (Map.Entry<String, Long> classEntry : myMap.entrySet()) {
-      myLog.debug("Cohesion Score for " + classEntry.getKey() + ": " + classEntry.getValue());
-      if (classEntry.getValue() < 1) {
-        continue;
+    SinkEventAttributeSet sinkEventAttributeSetColor = new SinkEventAttributeSet();
+
+    mainSink.section1();
+    mainSink.sectionTitle1();
+    mainSink.text("Coupling Graph");
+    mainSink.sectionTitle1_();
+    File couplingImage = new File(scaOutputDir.getAbsolutePath() + "/" + "coupling_graph.png");
+    if (!couplingImage.isFile()) {
+      mainSink.text(
+          "The coupling graph was not generated. This can occur when working on very large class structures.");
+    } else {
+      File copiedFile = new File(outputDirectory.getAbsolutePath() + "/coupling_graph.png");
+      try {
+        if (copiedFile.isFile()) {
+          copiedFile.delete();
+        }
+        Files.copy(couplingImage.toPath(), copiedFile.toPath());
+      } catch (IOException e) {
+        e.printStackTrace();
       }
-            String imageFileName = classEntry.getKey().replace("/", "_") + "_lcom_graph.png";
-            File imageFile = new File(outputDirectory.getAbsolutePath() + "/" + imageFileName);
-            myLog.debug("Path for ImageFile: " + imageFile.getAbsoluteFile());
-            File linkImageFile =
-                    new File(scaOutputDir.getAbsolutePath() + "/" + imageFileName);
-            try {
-              if (imageFile.exists()) {
-                if (!imageFile.delete()) {
-                  throw new MavenReportException(
-                          "Couldn't delete old version of image: " + imageFile.getAbsoluteFile());
-                }
-              }
-              Files.createLink(
-                      imageFile.getAbsoluteFile().toPath(),
-       linkImageFile.getAbsoluteFile().toPath());
-            } catch (IOException e) {
-              e.printStackTrace();
-            }
-
-      myLog.debug("Cohesion Score for " + classEntry.getKey() + ": " + classEntry.getValue());
-      String[] splitClassName = classEntry.getKey().split("/");
-      String shortClassName = splitClassName[splitClassName.length - 1];
-      mainSink.section1();
-      mainSink.sectionTitle1();
-      mainSink.text("Report for class " + shortClassName + ":");
-      mainSink.sectionTitle1_();
-      mainSink.paragraph();
-      mainSink.text("LCOM Score: " + classEntry.getValue());
-      mainSink.paragraph_();
       mainSink.figure();
-      mainSink.figureGraphics(imageFileName);
+      mainSink.figureGraphics(couplingImage.getAbsolutePath());
       mainSink.figure_();
-      mainSink.section1_();
+    }
+    mainSink.table();
+    mainSink.tableRows(new int[] {JUSTIFY_LEFT, JUSTIFY_LEFT}, true);
+    mainSink.tableRow();
+    mainSink.tableHeaderCell();
+    mainSink.text("Color");
+    mainSink.tableHeaderCell_();
+    mainSink.tableHeaderCell();
+    mainSink.text("Definition");
+    mainSink.tableHeaderCell_();
+    for (String[] color : colorLegend) {
+      sinkEventAttributeSetColor.addAttribute(SinkEventAttributes.BGCOLOR, color[1]);
+      mainSink.tableRow_();
+      mainSink.tableRow();
+      mainSink.tableCell(sinkEventAttributeSetColor);
+      mainSink.text(color[1]);
+      mainSink.tableCell_();
+      mainSink.tableCell();
+      mainSink.text(color[0]);
+      mainSink.tableCell_();
+      mainSink.tableRow_();
+      sinkEventAttributeSetColor.removeAttribute(SinkEventAttributes.BGCOLOR);
+    }
+    mainSink.tableRows_();
+    mainSink.table_();
+    pairCBOList.sort((al1,al2) -> (Integer.parseInt(al2.get(2)) - (Integer.parseInt(al1.get(2)))));
+    for( ArrayList<String> arrayList : pairCBOList ) {
+      mainSink.section2();
+      mainSink.sectionTitle2();
+      String sectionTitle = "Pair " + arrayList.get(0) + " and " + arrayList.get(1);
+      mainSink.text(sectionTitle);
+      mainSink.sectionTitle2_();
+      mainSink.text("Pair CBO: " + arrayList.get(2));
+      mainSink.section2_();
     }
     mainSink.body_();
   }
 
+  void generateReportEntry(Map.Entry<ArrayList<String>, Integer> classPairEntry) {
+  }
+
   @Override
   public String getOutputName() {
-    return "sca-report";
+    return "sca-coupling-pair-cbo-report";
   }
 
   @Override
   public String getName(Locale locale) {
-    return getOutputName();
+    return "SCA: Pair CBO Report";
   }
 
   @Override
@@ -156,6 +201,6 @@ public class SCACouplingPairCBOReportingMojo extends AbstractMavenReport {
 
   @Override
   public String getDescription(Locale locale) {
-    return getOutputName();
+    return "CBO pair scores Report";
   }
 }

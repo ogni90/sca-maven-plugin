@@ -8,6 +8,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.jgrapht.graph.DirectedMultigraph;
+import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import java.io.File;
@@ -43,7 +44,7 @@ public class SCACouplingMojo extends AbstractMojo {
     }
   }
 
-  void savePairCBOResultJSON(HashMap<ArrayList<String>, Integer> myCBOScores) throws MojoExecutionException {
+  void savePairCBOResultJSON(ArrayList<ArrayList<String>> myCBOScores) throws MojoExecutionException {
     String myPath = scaOutputDir.getAbsolutePath() + "/sca-coupling-pair-cbo-results.json";
     myLog.info("Writing Results JSON: " + myPath);
 
@@ -67,7 +68,7 @@ public class SCACouplingMojo extends AbstractMojo {
     }
 
     HashMap<String,HashMap<String,Integer>> CBOValues;
-    HashMap<ArrayList<String>, Integer> PairCBOValues;
+    ArrayList<ArrayList<String>> PairCBOValues;
 
     try {
       CouplingMultiGraphGenerator couplingMultiGraphGenerator =

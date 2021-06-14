@@ -31,19 +31,18 @@ public class CBOCalculator {
     return CBOScores;
   }
 
-  HashMap<ArrayList<String>, Integer> calculatePairCBO() {
+  ArrayList<ArrayList<String>> calculatePairCBO() {
     // Array with list of pairs and respective values
-    HashMap<ArrayList<String>, Integer> hashPairCBO = new HashMap<>();
+    ArrayList<ArrayList<String>> pairCBOListOfLists = new ArrayList<>();
     // iterates over all unique pairs of vertices
     for (int i = 0; i < classGraph.vertexSet().size(); i++) {
       for (int j = i + 1; j < classGraph.vertexSet().size(); j++) {
 
         // Add sum of all edges between vertices to hashmap
-        ArrayList<String> classes = new ArrayList<String>();
-        classes.add(classGraph.vertexSet().toArray()[i].toString());
-        classes.add(classGraph.vertexSet().toArray()[j].toString());
-        hashPairCBO.put(
-                classes,
+        ArrayList<String> pairCBOValues = new ArrayList<String>();
+        pairCBOValues.add(classGraph.vertexSet().toArray()[i].toString());
+        pairCBOValues.add(classGraph.vertexSet().toArray()[j].toString());
+        pairCBOValues.add(String.valueOf(
             classGraph
                     .getAllEdges(
                         (String) classGraph.vertexSet().toArray()[i],
@@ -53,9 +52,10 @@ public class CBOCalculator {
                     .getAllEdges(
                         (String) classGraph.vertexSet().toArray()[j],
                         (String) classGraph.vertexSet().toArray()[i])
-                    .size());
+                    .size()));
+        pairCBOListOfLists.add(pairCBOValues);
       }
     }
-    return hashPairCBO;
+    return pairCBOListOfLists;
   }
 }

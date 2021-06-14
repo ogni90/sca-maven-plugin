@@ -34,8 +34,8 @@ public class CouplingMultiGraphGenerator {
     ClassFileFinder classFileFinder = new ClassFileFinder(classDir);
     classFiles = classFileFinder.getClassFiles();
     generateGraph();
-
   }
+
   public CouplingMultiGraphGenerator(File classDir) throws IOException {
 
     ClassFileFinder classFileFinder = new ClassFileFinder(classDir);
@@ -89,7 +89,7 @@ public class CouplingMultiGraphGenerator {
       for (FieldNode field : CollectionUtils.emptyIfNull(myClassNode.fields)) {
         if (myLog != null) {
           myLog.debug("Field Name: " + field.name);
-          myLog.debug("Field Type: " + field.desc + "(" +  cleanInternalName(field.desc) + ")");
+          myLog.debug("Field Type: " + field.desc + "(" + cleanInternalName(field.desc) + ")");
         }
         if (!cleanInternalName(field.desc).startsWith("java/")
             && !cleanInternalName(field.desc).equals("")
@@ -113,7 +113,7 @@ public class CouplingMultiGraphGenerator {
           if (ain.getType() == AbstractInsnNode.METHOD_INSN) {
             MethodInsnNode methCall = (MethodInsnNode) ain;
             if (!cleanInternalName(methCall.owner).equals(cleanInternalName(myClassNode.name))
-                    && !cleanInternalName(methCall.owner).equals("")
+                && !cleanInternalName(methCall.owner).equals("")
                 && !methCall.owner.startsWith("java/")) {
               if (myLog != null) {
                 myLog.debug(
@@ -127,10 +127,10 @@ public class CouplingMultiGraphGenerator {
               if (!couplingGraph.vertexSet().contains(cleanInternalName(methCall.owner))) {
                 couplingGraph.addVertex(cleanInternalName(methCall.owner));
               }
-                couplingGraph.addEdge(
-                    cleanInternalName(myClassNode.name),
-                    cleanInternalName(methCall.owner),
-                    new LabeledEdge(LabeledEdge.ConnectionType.CALLS_METHOD));
+              couplingGraph.addEdge(
+                  cleanInternalName(myClassNode.name),
+                  cleanInternalName(methCall.owner),
+                  new LabeledEdge(LabeledEdge.ConnectionType.CALLS_METHOD));
             }
           }
 
@@ -138,7 +138,7 @@ public class CouplingMultiGraphGenerator {
           if (ain.getType() == AbstractInsnNode.FIELD_INSN) {
             FieldInsnNode fieldInsnNode = (FieldInsnNode) ain;
             if (!cleanInternalName(fieldInsnNode.owner).equals(cleanInternalName(myClassNode.name))
-                    && !cleanInternalName(fieldInsnNode.owner).equals("")
+                && !cleanInternalName(fieldInsnNode.owner).equals("")
                 && !fieldInsnNode.owner.startsWith("java/")) {
               if (myLog != null) {
                 myLog.debug(
@@ -152,11 +152,11 @@ public class CouplingMultiGraphGenerator {
               if (!couplingGraph.vertexSet().contains(cleanInternalName(fieldInsnNode.owner))) {
                 couplingGraph.addVertex(cleanInternalName(fieldInsnNode.owner));
               }
-                couplingGraph.addEdge(
-                    cleanInternalName(myClassNode.name),
-                    cleanInternalName(fieldInsnNode.owner),
-                    new LabeledEdge(LabeledEdge.ConnectionType.ACCESS_PUBLIC_VARIABLE));
-              }
+              couplingGraph.addEdge(
+                  cleanInternalName(myClassNode.name),
+                  cleanInternalName(fieldInsnNode.owner),
+                  new LabeledEdge(LabeledEdge.ConnectionType.ACCESS_PUBLIC_VARIABLE));
+            }
           }
         }
         // check for local Variables
@@ -167,8 +167,9 @@ public class CouplingMultiGraphGenerator {
             myLog.debug("Local Variable Type: " + cleanInternalName(myLocalVariableNode.desc));
           }
           if (!cleanInternalName(myLocalVariableNode.desc).startsWith("java/")
-                  && !cleanInternalName(myLocalVariableNode.desc).equals("")
-              && !cleanInternalName(myLocalVariableNode.desc).equals(cleanInternalName(myClassNode.name))) {
+              && !cleanInternalName(myLocalVariableNode.desc).equals("")
+              && !cleanInternalName(myLocalVariableNode.desc)
+                  .equals(cleanInternalName(myClassNode.name))) {
             if (!couplingGraph.vertexSet().contains(cleanInternalName(myLocalVariableNode.desc))) {
               couplingGraph.addVertex(cleanInternalName(myLocalVariableNode.desc));
             }
@@ -187,8 +188,9 @@ public class CouplingMultiGraphGenerator {
                 "Parameter internalName: " + cleanInternalName(parameterType.getInternalName()));
           }
 
-          if (!cleanInternalName(parameterType.getInternalName()).equals(cleanInternalName(myClassNode.name))
-                  && !cleanInternalName(parameterType.getInternalName()).equals("")
+          if (!cleanInternalName(parameterType.getInternalName())
+                  .equals(cleanInternalName(myClassNode.name))
+              && !cleanInternalName(parameterType.getInternalName()).equals("")
               && !cleanInternalName(parameterType.getInternalName()).startsWith("java/")) {
             if (!couplingGraph
                 .vertexSet()
@@ -214,55 +216,67 @@ public class CouplingMultiGraphGenerator {
     return cleanString;
   }
 
-  public void saveGraph(File targetDir)
-      throws IOException {
-    DOTExporter<String, LabeledEdge> dotExporter =
-        new DOTExporter<>(v -> v.replace("/", "_"));
+  public void saveGraph(File targetDir) throws IOException {
+    DOTExporter<String, LabeledEdge> dotExporter = new DOTExporter<>(v -> v.replace("/", "_"));
     dotExporter.setEdgeAttributeProvider(
         labeledEdge -> {
           Map<String, Attribute> map = new LinkedHashMap<>();
           map.put("label", DefaultAttribute.createAttribute("" + labeledEdge.getConnectionType()));
           return map;
         });
-    dotExporter.exportGraph(couplingGraph, new FileWriter(targetDir.getAbsolutePath()+"/coupling_graph.dot"));
+    dotExporter.exportGraph(
+        couplingGraph, new FileWriter(targetDir.getAbsolutePath() + "/coupling_graph.dot"));
 
-    try (InputStream dot = new FileInputStream(targetDir.getAbsolutePath()+"/coupling_graph.dot")) {
+    try (InputStream dot =
+        new FileInputStream(targetDir.getAbsolutePath() + "/coupling_graph.dot")) {
       MutableGraph g = new Parser().read(dot);
 
       // "Why don't you use g.edges() from the library?" you might ask. Because it is not working
       // for multigraphs is why...
 
       // Color Edges by their Link Type
-      g.nodes().forEach(node -> node.links().forEach(link -> link.add(getLinkColor(link.attrs().get("label").toString())))); //.forEach(attr -> attr.getValue())))));
+      g.nodes()
+          .forEach(
+              node ->
+                  node.links()
+                      .forEach(
+                          link -> link.add(getLinkColor(link.attrs().get("label").toString()))));
 
-      // Attempt to replace label with xlabel to avoid overlapping in labels - makes the output worse
-      //g.nodes().forEach(node -> node.links().forEach(link -> link.add(Label.of(link.get("label").toString().toLowerCase()).external())));
+      // Attempt to replace label with xlabel to avoid overlapping in labels - makes the output
+      // worse
+      // g.nodes().forEach(node -> node.links().forEach(link ->
+      // link.add(Label.of(link.get("label").toString().toLowerCase()).external())));
 
       // Remove Label-Text for better viewabilty
       g.nodes().forEach(node -> node.links().forEach(link -> link.add(Label.of(""))));
 
-      Graphviz.fromGraph(g).render(Format.PNG).toFile(new File(targetDir.getAbsolutePath()+"/coupling_graph.png"));
-      Graphviz.fromGraph(g).render(Format.DOT).toFile(new File(targetDir.getAbsolutePath()+"/colored_coupling_graph.dot"));
+      Graphviz.fromGraph(g)
+          .render(Format.PNG)
+          .toFile(new File(targetDir.getAbsolutePath() + "/coupling_graph.png"));
+      Graphviz.fromGraph(g)
+          .render(Format.DOT)
+          .toFile(new File(targetDir.getAbsolutePath() + "/colored_coupling_graph.dot"));
     }
-
-
-
-
   }
 
   private Color getLinkColor(String connectionType) {
     switch (connectionType) {
-      case "SUPERCLASS": return Color.VIOLET;
-      case "INSTANCE_VARIABLE": return Color.CHOCOLATE;
-      case "CALLS_METHOD": return Color.BLUE;
-      case "LOCAL_VARIABLE": return Color.ORANGE;
-      case "PARAMETER_TYPE": return Color.GREEN;
-      case "ACCESS_PUBLIC_VARIABLE": return Color.RED;
+      case "SUPERCLASS":
+        return Color.VIOLET;
+      case "INSTANCE_VARIABLE":
+        return Color.CHOCOLATE;
+      case "CALLS_METHOD":
+        return Color.BLUE;
+      case "LOCAL_VARIABLE":
+        return Color.ORANGE;
+      case "PARAMETER_TYPE":
+        return Color.GREEN;
+      case "ACCESS_PUBLIC_VARIABLE":
+        return Color.RED;
       default:
         System.out.println(connectionType);
         return Color.BLACK;
     }
-
   }
 
   public DirectedMultigraph<String, LabeledEdge> getGraph() throws IOException {
