@@ -33,12 +33,12 @@ import java.util.*;
 
 public class LCOMScoreCalculator {
 
-  ArrayList<File> classFiles;
+  final ArrayList<File> CLASS_FILES;
   Map<String, Integer> LCOMScores;
   HashMap<String, Graph<String, DefaultEdge>> LCOMGraph;
 
   public LCOMScoreCalculator(ArrayList<File> classFiles) throws IOException {
-    this.classFiles = classFiles;
+    this.CLASS_FILES = classFiles;
     calculateScores();
   }
 
@@ -52,7 +52,7 @@ public class LCOMScoreCalculator {
     LCOMScores = new HashMap<>();
     LCOMGraph = new HashMap<>();
 
-    for (File classFile : classFiles) {
+    for (File classFile : CLASS_FILES) {
 
       // Maps for which method uses which fields and which method calls which other methods
       Map<String, List<String>> methodUsesMap = new HashMap<>();
@@ -74,10 +74,12 @@ public class LCOMScoreCalculator {
 
       // Iterate over Methods in Class
       for (MethodNode method : myClassNode.methods) {
-        //               System.out.println("Looking at " + cleanInternalName(method.name) + " in " +
+        //               System.out.println("Looking at " + cleanInternalName(method.name) + " in "
+        // +
         // myClassNode.name);
         // Add vertex for method
-        LCOMGraph.get(cleanInternalName(myClassNode.name)).addVertex(cleanInternalName(method.name));
+        LCOMGraph.get(cleanInternalName(myClassNode.name))
+            .addVertex(cleanInternalName(method.name));
         // List of fields used in method
         List<String> myMethodFields = new ArrayList<>();
         // List of methods  called in Method
@@ -108,22 +110,14 @@ public class LCOMScoreCalculator {
       // Iterate over found methods find edges for graph using mutual used fields
       for (String method : LCOMGraph.get(cleanInternalName(myClassNode.name)).vertexSet()) {
         for (String usedField : methodUsesMap.get(method)) {
-          for (String secondMethod : LCOMGraph.get(cleanInternalName(myClassNode.name)).vertexSet()) {
+          for (String secondMethod :
+              LCOMGraph.get(cleanInternalName(myClassNode.name)).vertexSet()) {
             if (!method.equals(secondMethod)) {
-
-              /*
-                                          System.out.println(
-                                                  "Looking for Edges from "
-                                                          + method
-                                                          + " to "
-                                                          + secondMethod
-                                                          + " for field "
-                                                          + usedField);
-              */
-
+              // System.out.println("Looking for Edges from " + method + " to " + secondMethod + "
+              // for field " + usedField);
               if (!methodUsesMap.get(secondMethod).isEmpty()
                   && methodUsesMap.get(secondMethod).contains(usedField)) {
-                //                              System.out.println("Adding edge from " + method + "
+                // System.out.println("Adding edge from " + method + "
                 // to " + secondMethod);
                 LCOMGraph.get(cleanInternalName(myClassNode.name)).addEdge(method, secondMethod);
               }
@@ -135,7 +129,9 @@ public class LCOMScoreCalculator {
       for (String method : LCOMGraph.get(cleanInternalName(myClassNode.name)).vertexSet()) {
         for (String secondMethod : methodCallsMap.get(method)) {
           if (!secondMethod.equals(method)
-              && LCOMGraph.get(cleanInternalName(myClassNode.name)).vertexSet().contains(secondMethod)) {
+              && LCOMGraph.get(cleanInternalName(myClassNode.name))
+                  .vertexSet()
+                  .contains(secondMethod)) {
             LCOMGraph.get(cleanInternalName(myClassNode.name)).addEdge(method, secondMethod);
           }
         }
@@ -177,8 +173,6 @@ public class LCOMScoreCalculator {
                         + "/"
                         + graphEntry.getKey().replace("/", "_")
                         + "_lcom_graph.png"));
-      } catch (Exception e) {
-        System.out.println(e);
       }
     }
   }

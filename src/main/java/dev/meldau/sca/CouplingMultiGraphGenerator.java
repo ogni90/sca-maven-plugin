@@ -20,6 +20,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class CouplingMultiGraphGenerator {
 
@@ -240,7 +241,11 @@ public class CouplingMultiGraphGenerator {
               node ->
                   node.links()
                       .forEach(
-                          link -> link.add(getLinkColor(link.attrs().get("label").toString()))));
+                          link ->
+                              link.add(
+                                  getLinkColor(
+                                      Objects.requireNonNull(link.attrs().get("label"))
+                                          .toString()))));
 
       // Attempt to replace label with xlabel to avoid overlapping in labels - makes the output
       // worse
@@ -279,7 +284,7 @@ public class CouplingMultiGraphGenerator {
     }
   }
 
-  public DirectedMultigraph<String, LabeledEdge> getGraph() throws IOException {
+  public DirectedMultigraph<String, LabeledEdge> getGraph() {
     return couplingGraph;
   }
 }

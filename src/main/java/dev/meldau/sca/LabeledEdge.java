@@ -17,7 +17,7 @@ public class LabeledEdge extends DefaultEdge {
   /**
    * Constructor for labeled Edges takes the connectionType (enum) as a parameter.
    *
-   * @param connectionType
+   * @param connectionType Type of connection. Defined in enum.
    */
   public LabeledEdge(ConnectionType connectionType) {
     super();
@@ -34,8 +34,18 @@ public class LabeledEdge extends DefaultEdge {
   }
 
   /**
-   * This function returns the source of the directed Edge.
-   * This function is overwritten because it is needed for testing and private in the super class.
+   * set type of connection (enum)
+   *
+   * @param connectionType Type of connection. Defined in enum.
+   */
+  @SuppressWarnings("unused")
+  public void setConnectionType(ConnectionType connectionType) {
+    this.connectionType = connectionType;
+  }
+
+  /**
+   * This function returns the source of the directed Edge. This function is overwritten because it
+   * is needed for testing and private in the super class.
    *
    * @return source (String)
    */
@@ -45,24 +55,14 @@ public class LabeledEdge extends DefaultEdge {
   }
 
   /**
-   * This function returns the target of the directed Edge.
-   * This function is overwritten because it is needed for testing and private in the super class.
+   * This function returns the target of the directed Edge. This function is overwritten because it
+   * is needed for testing and private in the super class.
    *
    * @return target String
    */
   @Override
   public Object getTarget() {
     return super.getTarget();
-  }
-
-
-  /**
-   * set type of connection (enum)
-   *
-   * @param connectionType
-   */
-  public void setConnectionType(ConnectionType connectionType) {
-    this.connectionType = connectionType;
   }
 
   /** Overrides the toString() function of the superclass to show the type of connection. */

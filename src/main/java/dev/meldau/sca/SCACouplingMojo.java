@@ -2,13 +2,11 @@ package dev.meldau.sca;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.jgrapht.graph.DirectedMultigraph;
-import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import java.io.File;
@@ -32,7 +30,8 @@ public class SCACouplingMojo extends AbstractMojo {
 
   private Log myLog;
 
-  void saveCBOResultJSON(HashMap<String, HashMap<String,Integer>> myCBOScores) throws MojoExecutionException {
+  void saveCBOResultJSON(HashMap<String, HashMap<String, Integer>> myCBOScores)
+      throws MojoExecutionException {
     String myPath = scaOutputDir.getAbsolutePath() + "/sca-coupling-cbo-results.json";
     myLog.info("Writing Results JSON: " + myPath);
 
@@ -44,7 +43,8 @@ public class SCACouplingMojo extends AbstractMojo {
     }
   }
 
-  void savePairCBOResultJSON(ArrayList<ArrayList<String>> myCBOScores) throws MojoExecutionException {
+  void savePairCBOResultJSON(ArrayList<ArrayList<String>> myCBOScores)
+      throws MojoExecutionException {
     String myPath = scaOutputDir.getAbsolutePath() + "/sca-coupling-pair-cbo-results.json";
     myLog.info("Writing Results JSON: " + myPath);
 
@@ -57,22 +57,24 @@ public class SCACouplingMojo extends AbstractMojo {
   }
 
   @Override
-  public void execute() throws MojoExecutionException, MojoFailureException {
+  public void execute() throws MojoExecutionException {
     myLog = this.getLog();
 
     // Create target dir and cycles-output dir in target if they don't exist
     for (File f : new File[] {outputDirectory, scaOutputDir}) {
       if (!f.exists()) {
+        //noinspection ResultOfMethodCallIgnored
         f.mkdirs();
       }
     }
 
-    HashMap<String,HashMap<String,Integer>> CBOValues;
+    HashMap<String, HashMap<String, Integer>> CBOValues;
     ArrayList<ArrayList<String>> PairCBOValues;
 
     try {
       CouplingMultiGraphGenerator couplingMultiGraphGenerator =
-          new CouplingMultiGraphGenerator(new File(outputDirectory.getAbsolutePath() + "/classes"), myLog);
+          new CouplingMultiGraphGenerator(
+              new File(outputDirectory.getAbsolutePath() + "/classes"), myLog);
       DirectedMultigraph<String, LabeledEdge> couplingMultiGraph =
           couplingMultiGraphGenerator.getGraph();
       // Save graph as DOT File and Image for reporting
@@ -84,12 +86,11 @@ public class SCACouplingMojo extends AbstractMojo {
 
     } catch (IOException e) {
       e.printStackTrace();
-      throw new MojoExecutionException("The plugin encountered a problem while reading the class files.");
+      throw new MojoExecutionException(
+          "The plugin encountered a problem while reading the class files.");
     }
 
     saveCBOResultJSON(CBOValues);
     savePairCBOResultJSON(PairCBOValues);
-
-
   }
 }

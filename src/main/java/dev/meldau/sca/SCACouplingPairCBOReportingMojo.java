@@ -75,6 +75,7 @@ public class SCACouplingPairCBOReportingMojo extends AbstractMavenReport {
         return;
       }
       FileReader couplingCBOJSONFileReader = new FileReader(couplingCBOJSONFile);
+      //noinspection unchecked
       pairCBOList = (ArrayList<ArrayList<String>>) jsonParser.parse(couplingCBOJSONFileReader);
       myLog.info("Array:" + pairCBOList);
     } catch (FileNotFoundException e) {
@@ -102,15 +103,6 @@ public class SCACouplingPairCBOReportingMojo extends AbstractMavenReport {
 
     mainSink.body();
 
-    /*
-     case "SUPERCLASS": return Color.VIOLET;
-     case "INSTANCE_VARIABLE": return Color.CHOCOLATE;
-     case "CALLS_METHOD": return Color.BLUE;
-     case "LOCAL_VARIABLE": return Color.ORANGE;
-     case "PARAMETER_TYPE": return Color.GREEN;
-     case "ACCESS_PUBLIC_VARIABLE": return Color.RED;
-     default:
-    */
     String[][] colorLegend = {
       {"Superclass", "Violet"},
       {"Instance Variable", "Chocolate"},
@@ -134,6 +126,7 @@ public class SCACouplingPairCBOReportingMojo extends AbstractMavenReport {
       File copiedFile = new File(outputDirectory.getAbsolutePath() + "/coupling_graph.png");
       try {
         if (copiedFile.isFile()) {
+          //noinspection ResultOfMethodCallIgnored
           copiedFile.delete();
         }
         Files.copy(couplingImage.toPath(), copiedFile.toPath());
@@ -168,7 +161,7 @@ public class SCACouplingPairCBOReportingMojo extends AbstractMavenReport {
     }
     mainSink.tableRows_();
     mainSink.table_();
-    pairCBOList.sort((al1,al2) -> (Integer.parseInt(al2.get(2)) - (Integer.parseInt(al1.get(2)))));
+    Objects.requireNonNull(pairCBOList).sort((al1, al2) -> (Integer.parseInt(al2.get(2)) - (Integer.parseInt(al1.get(2)))));
     for( ArrayList<String> arrayList : pairCBOList ) {
       mainSink.section2();
       mainSink.sectionTitle2();
@@ -179,9 +172,6 @@ public class SCACouplingPairCBOReportingMojo extends AbstractMavenReport {
       mainSink.section2_();
     }
     mainSink.body_();
-  }
-
-  void generateReportEntry(Map.Entry<ArrayList<String>, Integer> classPairEntry) {
   }
 
   @Override

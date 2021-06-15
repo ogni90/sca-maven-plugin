@@ -76,9 +76,6 @@ class FeedbackArcSetFinderTest {
     feedbackArcSetFinderLoop = new FeedbackArcSetFinder(loopTestGraph);
   }
 
-  @AfterEach
-  void tearDown() {}
-
   @Test
   void getSinks() {
     List<String> sinks = new ArrayList<>();

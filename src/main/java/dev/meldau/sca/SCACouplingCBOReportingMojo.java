@@ -1,6 +1,5 @@
 package dev.meldau.sca;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.doxia.sink.SinkEventAttributes;
 import org.apache.maven.doxia.sink.impl.SinkEventAttributeSet;
@@ -19,7 +18,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 
 import static org.apache.maven.doxia.sink.Sink.JUSTIFY_LEFT;
 
@@ -31,6 +33,7 @@ public class SCACouplingCBOReportingMojo extends AbstractMavenReport {
       readonly = true,
       required = true)
   protected File outputDirectory;
+
   @Parameter(defaultValue = "${project}", readonly = true, required = true)
   private MavenProject project;
   /** sca output Directory */
@@ -75,7 +78,9 @@ public class SCACouplingCBOReportingMojo extends AbstractMavenReport {
         return;
       }
       FileReader couplingCBOJSONFileReader = new FileReader(couplingCBOJSONFile);
-      myMap = (HashMap<String, HashMap<String, Integer>>) jsonParser.parse(couplingCBOJSONFileReader);
+      //noinspection unchecked
+      myMap =
+          (HashMap<String, HashMap<String, Integer>>) jsonParser.parse(couplingCBOJSONFileReader);
       myLog.info("Map:" + myMap);
     } catch (FileNotFoundException e) {
       myLog.error(
@@ -102,22 +107,13 @@ public class SCACouplingCBOReportingMojo extends AbstractMavenReport {
 
     mainSink.body();
 
-    /*
-      case "SUPERCLASS": return Color.VIOLET;
-      case "INSTANCE_VARIABLE": return Color.CHOCOLATE;
-      case "CALLS_METHOD": return Color.BLUE;
-      case "LOCAL_VARIABLE": return Color.ORANGE;
-      case "PARAMETER_TYPE": return Color.GREEN;
-      case "ACCESS_PUBLIC_VARIABLE": return Color.RED;
-      default:
-     */
     String[][] colorLegend = {
-            {"Superclass", "Violet"},
-            {"Instance Variable", "Chocolate"},
-            {"Calls Method", "Blue"},
-            {"Local Variable", "Orange"},
-            {"Parameter Type", "Green"},
-            {"Access Public Variable", "Red"},
+      {"Superclass", "Violet"},
+      {"Instance Variable", "Chocolate"},
+      {"Calls Method", "Blue"},
+      {"Local Variable", "Orange"},
+      {"Parameter Type", "Green"},
+      {"Access Public Variable", "Red"},
     };
 
     SinkEventAttributeSet sinkEventAttributeSetColor = new SinkEventAttributeSet();
@@ -127,15 +123,13 @@ public class SCACouplingCBOReportingMojo extends AbstractMavenReport {
     mainSink.text("Coupling Graph");
     mainSink.sectionTitle1_();
     File couplingImage = new File(scaOutputDir.getAbsolutePath() + "/" + "coupling_graph.png");
-    if (!couplingImage.isFile())
-    {
-      mainSink.text("The coupling graph was not generated. This can occur when working on very large class structures.");
-    }
-    else
-    {
+    if (!couplingImage.isFile()) {
+      mainSink.text(
+          "The coupling graph was not generated. This can occur when working on very large class structures.");
+    } else {
       File copiedFile = new File(outputDirectory.getAbsolutePath() + "/coupling_graph.png");
       try {
-        if(copiedFile.isFile()) {
+        if (copiedFile.isFile()) {
           copiedFile.delete();
         }
         Files.copy(couplingImage.toPath(), copiedFile.toPath());
@@ -147,7 +141,7 @@ public class SCACouplingCBOReportingMojo extends AbstractMavenReport {
       mainSink.figure_();
     }
     mainSink.table();
-    mainSink.tableRows(new int[]{JUSTIFY_LEFT,JUSTIFY_LEFT}, true);
+    mainSink.tableRows(new int[] {JUSTIFY_LEFT, JUSTIFY_LEFT}, true);
     mainSink.tableRow();
     mainSink.tableHeaderCell();
     mainSink.text("Color");
@@ -155,24 +149,29 @@ public class SCACouplingCBOReportingMojo extends AbstractMavenReport {
     mainSink.tableHeaderCell();
     mainSink.text("Definition");
     mainSink.tableHeaderCell_();
-    for( String[] color : colorLegend ) {
-    sinkEventAttributeSetColor.addAttribute(SinkEventAttributes.BGCOLOR, color[1]);
-    mainSink.tableRow_();
-    mainSink.tableRow();
-    mainSink.tableCell(sinkEventAttributeSetColor);
-    mainSink.text(color[1]);
-    mainSink.tableCell_();
-    mainSink.tableCell();
-    mainSink.text(color[0]);
-    mainSink.tableCell_();
-    mainSink.tableRow_();
-    sinkEventAttributeSetColor.removeAttribute(SinkEventAttributes.BGCOLOR);
+    for (String[] color : colorLegend) {
+      sinkEventAttributeSetColor.addAttribute(SinkEventAttributes.BGCOLOR, color[1]);
+      mainSink.tableRow_();
+      mainSink.tableRow();
+      mainSink.tableCell(sinkEventAttributeSetColor);
+      mainSink.text(color[1]);
+      mainSink.tableCell_();
+      mainSink.tableCell();
+      mainSink.text(color[0]);
+      mainSink.tableCell_();
+      mainSink.tableRow_();
+      sinkEventAttributeSetColor.removeAttribute(SinkEventAttributes.BGCOLOR);
     }
     mainSink.tableRows_();
     mainSink.table_();
 
-    for (Map.Entry<String,HashMap<String, Integer>> classEntry : myMap.entrySet()) {
-      myLog.debug("Coupling CBO score for " + classEntry.getKey() + ": " + classEntry.getValue().get("degree"));
+    for (Map.Entry<String, HashMap<String, Integer>> classEntry :
+        Objects.requireNonNull(myMap).entrySet()) {
+      myLog.debug(
+          "Coupling CBO score for "
+              + classEntry.getKey()
+              + ": "
+              + classEntry.getValue().get("degree"));
       mainSink.section2();
       mainSink.sectionTitle2();
       mainSink.text("Report for class " + classEntry.getKey() + ":");

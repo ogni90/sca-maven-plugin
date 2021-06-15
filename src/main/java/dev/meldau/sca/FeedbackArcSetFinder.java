@@ -53,7 +53,8 @@ public class FeedbackArcSetFinder {
    *
    * @return bestVertex
    */
-  String getHighestOutDegreeInDegreeRatio(SimpleDirectedGraph<String, InformativeEdge> workingGraph) {
+  String getHighestOutDegreeInDegreeRatio(
+      SimpleDirectedGraph<String, InformativeEdge> workingGraph) {
     String bestVertex = null;
     Integer bestScore = null;
     for (String vertex : workingGraph.vertexSet()) {
@@ -73,7 +74,7 @@ public class FeedbackArcSetFinder {
     // This will always be OK. The compiler just doesn't feel that way.
     @SuppressWarnings("unchecked")
     SimpleDirectedGraph<String, InformativeEdge> workingGraph =
-            (SimpleDirectedGraph<String, InformativeEdge>) this.candidateGraph.clone();
+        (SimpleDirectedGraph<String, InformativeEdge>) this.candidateGraph.clone();
     LinkedList<String> stringsOne = new LinkedList<>();
     LinkedList<String> stringsTwo = new LinkedList<>();
 

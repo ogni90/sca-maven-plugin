@@ -24,21 +24,21 @@ import java.util.ListIterator;
  */
 
 public class ClassFileFinder {
-  File searchDir;
+  final File SEARCH_DIR;
 
   public ClassFileFinder(File searchDir) {
-    this.searchDir = searchDir;
+    this.SEARCH_DIR = searchDir;
   }
 
   public ArrayList<File> getClassFiles() throws FileNotFoundException {
-    if (!searchDir.exists()) {
+    if (!SEARCH_DIR.exists()) {
       throw new FileNotFoundException("Directory that should contain class Files not existent.");
     }
     ArrayList<File> classFiles = new ArrayList<>();
     // initialize dirList
     ArrayList<File> dirList = new ArrayList<>();
     // Add output directory to List
-    dirList.add(searchDir);
+    dirList.add(SEARCH_DIR);
     while (!dirList.isEmpty()) {
       ListIterator<File> dirIterator = dirList.listIterator();
       while (dirIterator.hasNext()) {

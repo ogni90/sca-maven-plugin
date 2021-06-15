@@ -33,65 +33,64 @@ import java.util.Map;
 @Mojo(name = "sca-cohesion", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
 public class SCACohesionMojo extends AbstractMojo {
 
-    Log myLog;
+  Log myLog;
 
-    /**
-     * Location of output directory
-     */
-    @Parameter(property = "project.build.directory", required = true, readonly = true)
-    private File outputDirectory;
-    /** sca output Directory */
-    @Parameter(
-            name = "scaOutputDir",
-            required = true,
-            defaultValue = "${project.build.directory}/sca-output")
-    private File scaOutputDir;
+  /** Location of output directory */
+  @Parameter(property = "project.build.directory", required = true, readonly = true)
+  private File outputDirectory;
+  /** sca output Directory */
+  @Parameter(
+      name = "scaOutputDir",
+      required = true,
+      defaultValue = "${project.build.directory}/sca-output")
+  private File scaOutputDir;
 
-    void saveResultJSON(Map<String, Integer> myLcomScores) throws MojoExecutionException {
-        String myPath = scaOutputDir.getAbsolutePath() + "/sca-cohesion-results.json";
-        myLog.info("Writing Results JSON: " + myPath);
+  void saveResultJSON(Map<String, Integer> myLcomScores) throws MojoExecutionException {
+    String myPath = scaOutputDir.getAbsolutePath() + "/sca-cohesion-results.json";
+    myLog.info("Writing Results JSON: " + myPath);
 
-        try (FileWriter resultsFile = new FileWriter(myPath)) {
-            resultsFile.write(JSONValue.toJSONString(myLcomScores));
-            resultsFile.flush();
-        } catch (IOException exception) {
-            throw new MojoExecutionException("Couldn't write result JSON-File");
-        }
+    try (FileWriter resultsFile = new FileWriter(myPath)) {
+      resultsFile.write(JSONValue.toJSONString(myLcomScores));
+      resultsFile.flush();
+    } catch (IOException exception) {
+      throw new MojoExecutionException("Couldn't write result JSON-File");
+    }
+  }
+
+  @Override
+  public void execute() throws MojoExecutionException {
+    /* Maven Log Variable */
+    myLog = this.getLog();
+
+    // Create Directories if they don't exist
+    for (File f : new File[] {outputDirectory, scaOutputDir}) {
+      if (!f.exists()) {
+        //noinspection ResultOfMethodCallIgnored
+        f.mkdir();
+      }
     }
 
-    @Override
-    public void execute() throws MojoExecutionException {
-        /* Maven Log Variable */
-        myLog = this.getLog();
+    /* Result Variable */
+    Map<String, Integer> lcomScores;
 
-        // Create Directories if they don't exist
-        for (File f : new File[] {outputDirectory, scaOutputDir}) {
-            if (!f.exists()) {
-                //noinspection ResultOfMethodCallIgnored
-                f.mkdir();
-            }
-        }
-
-        /* Result Variable */
-        Map<String, Integer> lcomScores;
-
-        ClassFileFinder classFileFinder = new ClassFileFinder(new File(outputDirectory.getAbsolutePath() + "/classes"  ));
-        try {
-            LCOMScoreCalculator lcomScoreCalculator = new LCOMScoreCalculator(classFileFinder.getClassFiles());
-            lcomScores = lcomScoreCalculator.getLCOMScores();
-            lcomScoreCalculator.saveGraph(scaOutputDir);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            throw new MojoExecutionException("Output directory does not exist.");
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new MojoExecutionException("File not found when trying to gather class files.");
-        }
-
-        // Save cohesion output to JSON-file for reporting plugin
-        saveResultJSON(lcomScores);
-
-        myLog.info("LCOM Scores: " + lcomScores);
-
+    ClassFileFinder classFileFinder =
+        new ClassFileFinder(new File(outputDirectory.getAbsolutePath() + "/classes"));
+    try {
+      LCOMScoreCalculator lcomScoreCalculator =
+          new LCOMScoreCalculator(classFileFinder.getClassFiles());
+      lcomScores = lcomScoreCalculator.getLCOMScores();
+      lcomScoreCalculator.saveGraph(scaOutputDir);
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+      throw new MojoExecutionException("Output directory does not exist.");
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new MojoExecutionException("File not found when trying to gather class files.");
     }
+
+    // Save cohesion output to JSON-file for reporting plugin
+    saveResultJSON(lcomScores);
+
+    myLog.info("LCOM Scores: " + lcomScores);
+  }
 }

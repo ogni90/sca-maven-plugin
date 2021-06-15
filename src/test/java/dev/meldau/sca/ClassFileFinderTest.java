@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /*
  * Copyright 2020-2021 Ingo Meldau
@@ -27,26 +27,28 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ClassFileFinderTest {
 
-    ClassFileFinder classFileFinder;
+  ClassFileFinder classFileFinder;
 
-    @BeforeEach
-    void setUp() {
-        File classesDir = new File("src/test/resources");
-        classFileFinder = new ClassFileFinder(classesDir);
+  @BeforeEach
+  void setUp() {
+    File classesDir = new File("src/test/resources");
+    classFileFinder = new ClassFileFinder(classesDir);
+  }
+
+  @Test
+  void getClassFiles() {
+    try {
+      ArrayList<File> classFiles = classFileFinder.getClassFiles();
+
+      assertTrue(classFiles.contains(new File("src/test/resources/ClassesWithCycle/App.class")));
+      assertTrue(
+          classFiles.contains(new File("src/test/resources/ClassesWithCycle/SuperThing.class")));
+      assertTrue(classFiles.contains(new File("src/test/resources/ClassesWithoutCycle/App.class")));
+      assertTrue(
+          classFiles.contains(new File("src/test/resources/ClassesWithoutCycle/SuperThing.class")));
+
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
     }
-    @Test
-    void getClassFiles() {
-        try {
-            ArrayList<File> classFiles = classFileFinder.getClassFiles();
-
-            assertTrue(classFiles.contains(new File("src/test/resources/ClassesWithCycle/App.class")));
-            assertTrue(classFiles.contains(new File("src/test/resources/ClassesWithCycle/SuperThing.class")));
-            assertTrue(classFiles.contains(new File("src/test/resources/ClassesWithoutCycle/App.class")));
-            assertTrue(classFiles.contains(new File("src/test/resources/ClassesWithoutCycle/SuperThing.class")));
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-    }
+  }
 }

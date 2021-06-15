@@ -72,6 +72,7 @@ public class SCACyclesReportingMojo extends AbstractMavenReport {
           new File(scaOutputDir.getAbsolutePath() + "/cycles/feedback-arc-set.json");
       if (feedbackArcSetJSONFile.isFile()) {
         FileReader cohesionJSONFileReader = new FileReader(feedbackArcSetJSONFile);
+        //noinspection unchecked
         feedbackArcSet = (ArrayList<ArrayList<String>>) jsonParser.parse(cohesionJSONFileReader);
       }
       myLog.info("List:" + feedbackArcSet);

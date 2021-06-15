@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CouplingMultiGraphGeneratorTest {
 
@@ -34,7 +34,7 @@ class CouplingMultiGraphGeneratorTest {
       if (labeledEdge.getSource().equals("dev/meldau/myjavamvntest/App")
           && labeledEdge.getTarget().equals("dev/meldau/myjavamvntest/SuperThing")
           && labeledEdge.getConnectionType() == LabeledEdge.ConnectionType.LOCAL_VARIABLE) {
-          edgeCounter++;
+        edgeCounter++;
       }
     }
     assertEquals(3, edgeCounter);

@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
@@ -22,7 +21,7 @@ class LCOMScoreCalculatorTest {
   }
 
   @Test
-  void getScores() throws IOException {
+  void getScores() {
      final Map<String, Integer> LCOMScores = lcomScoreCalculator.getLCOMScores();
       assertEquals(2, (int) LCOMScores.get("dev/meldau/myjavamvntest/App"));
       assertEquals(2, (int) LCOMScores.get("dev/meldau/myjavamvntest/SuperThing"));

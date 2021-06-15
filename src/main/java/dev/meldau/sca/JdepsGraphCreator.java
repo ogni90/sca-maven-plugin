@@ -14,6 +14,7 @@ import org.jgrapht.nio.dot.DOTExporter;
 import org.jgrapht.nio.dot.DOTImporter;
 
 import java.io.*;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.spi.ToolProvider;
@@ -115,9 +116,14 @@ public class JdepsGraphCreator {
       // Display edges which are part of the FAC in bold Red
       for (Link edge : g.edges()) {
         for (InformativeEdge arc : feedbackArcSet) {
-          if (edge.from().name().value().equals(
-                   arc.getSource().toString().replace('.', '_').replace('$', '_'))
-              && edge.to().name().value().equals(arc.getTarget().toString().replace('.', '_').replace('$', '_'))) {
+          if (Objects.requireNonNull(edge.from())
+                  .name()
+                  .value()
+                  .equals(arc.getSource().toString().replace('.', '_').replace('$', '_'))
+              && edge.to()
+                  .name()
+                  .value()
+                  .equals(arc.getTarget().toString().replace('.', '_').replace('$', '_'))) {
             edge.add(Color.RED);
             edge.add(Style.BOLD);
           }

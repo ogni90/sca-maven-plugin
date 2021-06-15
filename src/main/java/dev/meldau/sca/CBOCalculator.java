@@ -2,10 +2,8 @@ package dev.meldau.sca;
 
 import org.jgrapht.graph.DirectedMultigraph;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * This class calculates the Coupling Between Objects metric for a provided program in form of a
@@ -13,19 +11,19 @@ import java.util.List;
  */
 public class CBOCalculator {
 
-  DirectedMultigraph<String, LabeledEdge> classGraph;
+  final DirectedMultigraph<String, LabeledEdge> CLASS_GRAPH;
 
   public CBOCalculator(DirectedMultigraph<String, LabeledEdge> classGraph) {
-    this.classGraph = classGraph;
+    this.CLASS_GRAPH = classGraph;
   }
 
   HashMap<String, HashMap<String, Integer>> calculateCBO() {
     HashMap<String, HashMap<String, Integer>> CBOScores = new HashMap<>();
-    for (String vertex : classGraph.vertexSet()) {
+    for (String vertex : CLASS_GRAPH.vertexSet()) {
       HashMap<String, Integer> degrees = new HashMap<>();
-      degrees.put("degree", classGraph.degreeOf(vertex));
-      degrees.put("inDegree", classGraph.inDegreeOf(vertex));
-      degrees.put("outDegree", classGraph.outDegreeOf(vertex));
+      degrees.put("degree", CLASS_GRAPH.degreeOf(vertex));
+      degrees.put("inDegree", CLASS_GRAPH.inDegreeOf(vertex));
+      degrees.put("outDegree", CLASS_GRAPH.outDegreeOf(vertex));
       CBOScores.put(vertex, degrees);
     }
     return CBOScores;
@@ -35,23 +33,23 @@ public class CBOCalculator {
     // Array with list of pairs and respective values
     ArrayList<ArrayList<String>> pairCBOListOfLists = new ArrayList<>();
     // iterates over all unique pairs of vertices
-    for (int i = 0; i < classGraph.vertexSet().size(); i++) {
-      for (int j = i + 1; j < classGraph.vertexSet().size(); j++) {
+    for (int i = 0; i < CLASS_GRAPH.vertexSet().size(); i++) {
+      for (int j = i + 1; j < CLASS_GRAPH.vertexSet().size(); j++) {
 
         // Add sum of all edges between vertices to hashmap
-        ArrayList<String> pairCBOValues = new ArrayList<String>();
-        pairCBOValues.add(classGraph.vertexSet().toArray()[i].toString());
-        pairCBOValues.add(classGraph.vertexSet().toArray()[j].toString());
+        ArrayList<String> pairCBOValues = new ArrayList<>();
+        pairCBOValues.add(CLASS_GRAPH.vertexSet().toArray()[i].toString());
+        pairCBOValues.add(CLASS_GRAPH.vertexSet().toArray()[j].toString());
         pairCBOValues.add(String.valueOf(
-            classGraph
+            CLASS_GRAPH
                     .getAllEdges(
-                        (String) classGraph.vertexSet().toArray()[i],
-                        (String) classGraph.vertexSet().toArray()[j])
+                        (String) CLASS_GRAPH.vertexSet().toArray()[i],
+                        (String) CLASS_GRAPH.vertexSet().toArray()[j])
                     .size()
-                + classGraph
+                + CLASS_GRAPH
                     .getAllEdges(
-                        (String) classGraph.vertexSet().toArray()[j],
-                        (String) classGraph.vertexSet().toArray()[i])
+                        (String) CLASS_GRAPH.vertexSet().toArray()[j],
+                        (String) CLASS_GRAPH.vertexSet().toArray()[i])
                     .size()));
         pairCBOListOfLists.add(pairCBOValues);
       }

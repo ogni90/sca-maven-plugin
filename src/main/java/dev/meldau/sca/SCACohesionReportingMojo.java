@@ -19,6 +19,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 @Mojo(name = "sca-cohesion-report", defaultPhase = LifecyclePhase.SITE, threadSafe = true)
 public class SCACohesionReportingMojo extends AbstractMavenReport {
@@ -28,6 +29,7 @@ public class SCACohesionReportingMojo extends AbstractMavenReport {
       readonly = true,
       required = true)
   protected File outputDirectory;
+
   @Parameter(defaultValue = "${project}", readonly = true, required = true)
   private MavenProject project;
   /** sca output Directory */
@@ -68,6 +70,7 @@ public class SCACohesionReportingMojo extends AbstractMavenReport {
       File cohesionJSONFile =
           new File(scaOutputDir.getAbsolutePath() + "/sca-cohesion-results.json");
       FileReader cohesionJSONFileReader = new FileReader(cohesionJSONFile);
+      //noinspection unchecked
       myMap = (HashMap<String, Long>) jsonParser.parse(cohesionJSONFileReader);
       myLog.info("Map:" + myMap);
     } catch (FileNotFoundException e) {
@@ -97,29 +100,27 @@ public class SCACohesionReportingMojo extends AbstractMavenReport {
 
     // Average, best and worst score
 
-    for (Map.Entry<String, Long> classEntry : myMap.entrySet()) {
+    for (Map.Entry<String, Long> classEntry : Objects.requireNonNull(myMap).entrySet()) {
       myLog.debug("Cohesion Score for " + classEntry.getKey() + ": " + classEntry.getValue());
       if (classEntry.getValue() < 1) {
         continue;
       }
-            String imageFileName = classEntry.getKey().replace("/", "_") + "_lcom_graph.png";
-            File imageFile = new File(outputDirectory.getAbsolutePath() + "/" + imageFileName);
-            myLog.debug("Path for ImageFile: " + imageFile.getAbsoluteFile());
-            File linkImageFile =
-                    new File(scaOutputDir.getAbsolutePath() + "/" + imageFileName);
-            try {
-              if (imageFile.exists()) {
-                if (!imageFile.delete()) {
-                  throw new MavenReportException(
-                          "Couldn't delete old version of image: " + imageFile.getAbsoluteFile());
-                }
-              }
-              Files.createLink(
-                      imageFile.getAbsoluteFile().toPath(),
-       linkImageFile.getAbsoluteFile().toPath());
-            } catch (IOException e) {
-              e.printStackTrace();
-            }
+      String imageFileName = classEntry.getKey().replace("/", "_") + "_lcom_graph.png";
+      File imageFile = new File(outputDirectory.getAbsolutePath() + "/" + imageFileName);
+      myLog.debug("Path for ImageFile: " + imageFile.getAbsoluteFile());
+      File linkImageFile = new File(scaOutputDir.getAbsolutePath() + "/" + imageFileName);
+      try {
+        if (imageFile.exists()) {
+          if (!imageFile.delete()) {
+            throw new MavenReportException(
+                "Couldn't delete old version of image: " + imageFile.getAbsoluteFile());
+          }
+        }
+        Files.createLink(
+            imageFile.getAbsoluteFile().toPath(), linkImageFile.getAbsoluteFile().toPath());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
 
       myLog.debug("Cohesion Score for " + classEntry.getKey() + ": " + classEntry.getValue());
       String[] splitClassName = classEntry.getKey().split("/");

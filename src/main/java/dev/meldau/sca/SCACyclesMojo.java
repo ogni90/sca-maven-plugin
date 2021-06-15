@@ -23,7 +23,6 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.jgrapht.graph.DefaultEdge;
 import org.json.simple.JSONValue;
 
 import java.io.File;
@@ -37,13 +36,8 @@ public class SCACyclesMojo extends AbstractMojo {
   /** Maven Log Variable */
   Log mvnLog = this.getLog();
 
-  /**
-   * If this parameter is true, the test phase will break with an exception
-   */
-  @Parameter(
-      name = "breakOnCycle",
-      required = true,
-      defaultValue = "false")
+  /** If this parameter is true, the test phase will break with an exception */
+  @Parameter(name = "breakOnCycle", required = true, defaultValue = "false")
   boolean breakOnCycle;
   /** Maven output Directory */
   @Parameter(property = "project.build.directory", required = true, readonly = true)
@@ -66,7 +60,7 @@ public class SCACyclesMojo extends AbstractMojo {
   void saveFeedbackArcSetJSON(Set<InformativeEdge> feedbackArcSet) throws MojoExecutionException {
     Log myLog = this.getLog();
     ArrayList<ArrayList<String>> feedbackArcSetAL = new ArrayList<>();
-    for ( InformativeEdge edge : feedbackArcSet ) {
+    for (InformativeEdge edge : feedbackArcSet) {
       ArrayList<String> arc = new ArrayList<>();
       arc.add(edge.getSource().toString());
       arc.add(edge.getTarget().toString());
@@ -77,7 +71,8 @@ public class SCACyclesMojo extends AbstractMojo {
     File myFile = new File(myPath);
 
     // delete result file from previous run if it exists
-    if(myFile.isFile()) {
+    if (myFile.isFile()) {
+      //noinspection ResultOfMethodCallIgnored
       myFile.delete();
     }
 
@@ -117,8 +112,7 @@ public class SCACyclesMojo extends AbstractMojo {
         throw new MojoFailureException("There is a cycle dependency in the project. Aborting.");
       }
       jdepsGraphCreator.saveGraphForReport(feedbackArcSet);
-    }
-    else {
+    } else {
       jdepsGraphCreator.saveGraphForReport();
     }
   }
