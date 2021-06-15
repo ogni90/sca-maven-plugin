@@ -1,5 +1,6 @@
 package dev.meldau.sca;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +26,7 @@ class JdepsGraphCreatorTest {
     jdepsGraphCreatorWithoutLoop = new JdepsGraphCreator(classesWithoutCycle, classesWithoutCycle);
   }
 
+  @SuppressFBWarnings({"NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", "RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"})
   @SuppressWarnings("ResultOfMethodCallIgnored")
   @AfterEach
   void tearDown() {

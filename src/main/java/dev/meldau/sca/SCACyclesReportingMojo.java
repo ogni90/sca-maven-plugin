@@ -1,5 +1,6 @@
 package dev.meldau.sca;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -19,6 +20,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Locale;
 
+@SuppressFBWarnings("DM_DEFAULT_ENCODING")
 @Mojo(name = "sca-cycles-report", defaultPhase = LifecyclePhase.SITE, threadSafe = true)
 public class SCACyclesReportingMojo extends AbstractMavenReport {
 

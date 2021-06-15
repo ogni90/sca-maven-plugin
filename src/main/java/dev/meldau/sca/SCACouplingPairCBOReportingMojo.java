@@ -1,5 +1,6 @@
 package dev.meldau.sca;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.doxia.sink.SinkEventAttributes;
 import org.apache.maven.doxia.sink.impl.SinkEventAttributeSet;
@@ -22,6 +23,7 @@ import java.util.*;
 
 import static org.apache.maven.doxia.sink.Sink.JUSTIFY_LEFT;
 
+@SuppressFBWarnings("DM_DEFAULT_ENCODING")
 @Mojo(name = "sca-coupling-pair-cbo-report", defaultPhase = LifecyclePhase.SITE, threadSafe = true)
 public class SCACouplingPairCBOReportingMojo extends AbstractMavenReport {
 
@@ -47,6 +49,7 @@ public class SCACouplingPairCBOReportingMojo extends AbstractMavenReport {
     return outputDirectory.toString();
   }
 
+  @edu.umd.cs.findbugs.annotations.SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
   @Override
   protected void executeReport(Locale locale) throws MavenReportException {
     // initialize Logger
@@ -74,9 +77,10 @@ public class SCACouplingPairCBOReportingMojo extends AbstractMavenReport {
         myLog.info("No result File. Skipping Pair CBO results report...");
         return;
       }
-      FileReader couplingCBOJSONFileReader = new FileReader(couplingCBOJSONFile);
-      //noinspection unchecked
-      pairCBOList = (ArrayList<ArrayList<String>>) jsonParser.parse(couplingCBOJSONFileReader);
+      try (FileReader couplingCBOJSONFileReader = new FileReader(couplingCBOJSONFile)) {
+        //noinspection unchecked
+        pairCBOList = (ArrayList<ArrayList<String>>) jsonParser.parse(couplingCBOJSONFileReader);
+      }
       myLog.info("Array:" + pairCBOList);
     } catch (FileNotFoundException e) {
       myLog.error(

@@ -1,5 +1,6 @@
 package dev.meldau.sca;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import guru.nidi.graphviz.attribute.Color;
 import guru.nidi.graphviz.attribute.Label;
 import guru.nidi.graphviz.engine.Format;
@@ -217,6 +218,7 @@ public class CouplingMultiGraphGenerator {
     return cleanString;
   }
 
+  @SuppressFBWarnings("DM_DEFAULT_ENCODING")
   public void saveGraph(File targetDir) throws IOException {
     DOTExporter<String, LabeledEdge> dotExporter = new DOTExporter<>(v -> v.replace("/", "_"));
     dotExporter.setEdgeAttributeProvider(

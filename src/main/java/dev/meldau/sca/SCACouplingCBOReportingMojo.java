@@ -1,5 +1,6 @@
 package dev.meldau.sca;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.doxia.sink.SinkEventAttributes;
 import org.apache.maven.doxia.sink.impl.SinkEventAttributeSet;
@@ -25,6 +26,7 @@ import java.util.Objects;
 
 import static org.apache.maven.doxia.sink.Sink.JUSTIFY_LEFT;
 
+@SuppressFBWarnings("DM_DEFAULT_ENCODING")
 @Mojo(name = "sca-coupling-cbo-report", defaultPhase = LifecyclePhase.SITE, threadSafe = true)
 public class SCACouplingCBOReportingMojo extends AbstractMavenReport {
 
@@ -50,6 +52,7 @@ public class SCACouplingCBOReportingMojo extends AbstractMavenReport {
     return outputDirectory.toString();
   }
 
+  @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
   @Override
   protected void executeReport(Locale locale) throws MavenReportException {
     // initialize Logger

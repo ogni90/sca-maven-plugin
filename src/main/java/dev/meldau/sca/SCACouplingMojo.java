@@ -1,5 +1,6 @@
 package dev.meldau.sca;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+@SuppressFBWarnings({"DM_DEFAULT_ENCODING", "DM_DEFAULT_ENCODING"})
 @Mojo(name = "sca-coupling", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
 public class SCACouplingMojo extends AbstractMojo {
   /** Location of the file. */
@@ -56,6 +58,7 @@ public class SCACouplingMojo extends AbstractMojo {
     }
   }
 
+  @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
   @Override
   public void execute() throws MojoExecutionException {
     myLog = this.getLog();

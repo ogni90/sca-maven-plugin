@@ -16,6 +16,7 @@ package dev.meldau.sca;
  * limitations under the License.
  */
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
 
+@SuppressFBWarnings("DM_DEFAULT_ENCODING")
 @Mojo(name = "sca-cycles", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
 public class SCACyclesMojo extends AbstractMojo {
   /** Maven Log Variable */
@@ -57,6 +59,7 @@ public class SCACyclesMojo extends AbstractMojo {
     return new File(scaOutputDir.getAbsolutePath() + "/cycles");
   }
 
+  @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
   void saveFeedbackArcSetJSON(Set<InformativeEdge> feedbackArcSet) throws MojoExecutionException {
     Log myLog = this.getLog();
     ArrayList<ArrayList<String>> feedbackArcSetAL = new ArrayList<>();
@@ -86,6 +89,7 @@ public class SCACyclesMojo extends AbstractMojo {
     }
   }
 
+  @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
   public void execute() throws MojoFailureException, MojoExecutionException {
 
     // Create Directories if they don't exist

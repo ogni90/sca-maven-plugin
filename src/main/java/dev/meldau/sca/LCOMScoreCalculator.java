@@ -1,5 +1,6 @@
 package dev.meldau.sca;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.MutableGraph;
@@ -31,6 +32,7 @@ import java.util.*;
  * limitations under the License.
  */
 
+@SuppressFBWarnings("DM_DEFAULT_ENCODING")
 public class LCOMScoreCalculator {
 
   final ArrayList<File> CLASS_FILES;
@@ -62,10 +64,13 @@ public class LCOMScoreCalculator {
        Get Class Object of Main Class in ASM
        TODO: What about more than one Class in a classfile?!
       */
-      InputStream classFileIS = new FileInputStream(classFile);
-      ClassNode myClassNode = new ClassNode();
+      ClassNode myClassNode;
+      ClassReader myClassReader;
+      try (InputStream classFileIS = new FileInputStream(classFile)) {
+        myClassNode = new ClassNode();
 
-      ClassReader myClassReader = new ClassReader(classFileIS);
+        myClassReader = new ClassReader(classFileIS);
+      }
       myClassReader.accept(myClassNode, 0);
 
       //            System.out.println("LCOM Calculation for Class " + myClassNode.name );

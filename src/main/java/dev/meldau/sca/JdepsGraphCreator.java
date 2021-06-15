@@ -1,5 +1,6 @@
 package dev.meldau.sca;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import guru.nidi.graphviz.attribute.Color;
 import guru.nidi.graphviz.attribute.Style;
 import guru.nidi.graphviz.engine.Format;
@@ -19,6 +20,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.spi.ToolProvider;
 
+@SuppressFBWarnings("DM_DEFAULT_ENCODING")
 public class JdepsGraphCreator {
 
   private final File CLASS_DIR;

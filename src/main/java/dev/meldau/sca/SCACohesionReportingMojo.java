@@ -1,5 +1,6 @@
 package dev.meldau.sca;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -21,6 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+@SuppressFBWarnings("DM_DEFAULT_ENCODING")
 @Mojo(name = "sca-cohesion-report", defaultPhase = LifecyclePhase.SITE, threadSafe = true)
 public class SCACohesionReportingMojo extends AbstractMavenReport {
 
