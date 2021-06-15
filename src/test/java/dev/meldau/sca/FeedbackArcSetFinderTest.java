@@ -1,6 +1,5 @@
 package dev.meldau.sca;
 
-import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,8 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FeedbackArcSetFinderTest {
 
-  SimpleDirectedGraph<String, DefaultEdge> simpleTestGraph;
-  SimpleDirectedGraph<String, DefaultEdge> loopTestGraph;
+  SimpleDirectedGraph<String, InformativeEdge> simpleTestGraph;
+  SimpleDirectedGraph<String, InformativeEdge> loopTestGraph;
 
   FeedbackArcSetFinder feedbackArcSetFinderSimple;
   FeedbackArcSetFinder feedbackArcSetFinderLoop;
@@ -33,7 +32,7 @@ class FeedbackArcSetFinderTest {
      *       V      V         V
      *    sink1    sink2     sink3
      */
-    simpleTestGraph = new SimpleDirectedGraph<>(DefaultEdge.class);
+    simpleTestGraph = new SimpleDirectedGraph<>(InformativeEdge.class);
     simpleTestGraph.addVertex("src1");
     simpleTestGraph.addVertex("src2");
     simpleTestGraph.addVertex("middlepart1");
@@ -59,7 +58,7 @@ class FeedbackArcSetFinderTest {
      *
      */
 
-    loopTestGraph = new SimpleDirectedGraph<>(DefaultEdge.class);
+    loopTestGraph = new SimpleDirectedGraph<>(InformativeEdge.class);
     loopTestGraph.addVertex("loopA1");
     loopTestGraph.addVertex("loopA2");
     loopTestGraph.addVertex("loopA3");
@@ -104,7 +103,7 @@ class FeedbackArcSetFinderTest {
 
   @Test
   void getFeedbackArcSet() {
-    Set<DefaultEdge> feedbackArcSet = new HashSet<>();
+    Set<InformativeEdge> feedbackArcSet = new HashSet<>();
     feedbackArcSet.add(loopTestGraph.getEdge("loopA2", "loopA3"));
     assertEquals(
         feedbackArcSet, feedbackArcSetFinderLoop.getFeedbackArcSet());

@@ -1,7 +1,6 @@
 package dev.meldau.sca;
 
 import org.jgrapht.Graphs;
-import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
 
 import java.util.*;
@@ -13,9 +12,9 @@ import java.util.*;
  */
 public class FeedbackArcSetFinder {
 
-  private final SimpleDirectedGraph<String, DefaultEdge> candidateGraph;
+  private final SimpleDirectedGraph<String, InformativeEdge> candidateGraph;
 
-  public FeedbackArcSetFinder(SimpleDirectedGraph<String, DefaultEdge> candidateGraph) {
+  public FeedbackArcSetFinder(SimpleDirectedGraph<String, InformativeEdge> candidateGraph) {
     this.candidateGraph = candidateGraph;
   }
 
@@ -24,7 +23,7 @@ public class FeedbackArcSetFinder {
    *
    * @return listOfSinks
    */
-  List<String> getSinks(SimpleDirectedGraph<String, DefaultEdge> workingGraph) {
+  List<String> getSinks(SimpleDirectedGraph<String, InformativeEdge> workingGraph) {
     List<String> listOfSinks = new ArrayList<>();
     for (String vertex : workingGraph.vertexSet()) {
       if (Graphs.successorListOf(workingGraph, vertex).isEmpty()) {
@@ -39,7 +38,7 @@ public class FeedbackArcSetFinder {
    *
    * @return listOfSources
    */
-  List<String> getSources(SimpleDirectedGraph<String, DefaultEdge> workingGraph) {
+  List<String> getSources(SimpleDirectedGraph<String, InformativeEdge> workingGraph) {
     List<String> listOfSources = new ArrayList<>();
     for (String vertex : workingGraph.vertexSet()) {
       if (Graphs.predecessorListOf(workingGraph, vertex).isEmpty()) {
@@ -54,7 +53,7 @@ public class FeedbackArcSetFinder {
    *
    * @return bestVertex
    */
-  String getHighestOutDegreeInDegreeRatio(SimpleDirectedGraph<String, DefaultEdge> workingGraph) {
+  String getHighestOutDegreeInDegreeRatio(SimpleDirectedGraph<String, InformativeEdge> workingGraph) {
     String bestVertex = null;
     Integer bestScore = null;
     for (String vertex : workingGraph.vertexSet()) {
@@ -69,12 +68,12 @@ public class FeedbackArcSetFinder {
     return bestVertex;
   }
 
-  /** @return Set<DefaultEdge> */
-  public Set<DefaultEdge> getFeedbackArcSet() {
+  /** @return Set<InformativeEdge> */
+  public Set<InformativeEdge> getFeedbackArcSet() {
     // This will always be OK. The compiler just doesn't feel that way.
     @SuppressWarnings("unchecked")
-    SimpleDirectedGraph<String, DefaultEdge> workingGraph =
-            (SimpleDirectedGraph<String, DefaultEdge>) this.candidateGraph.clone();
+    SimpleDirectedGraph<String, InformativeEdge> workingGraph =
+            (SimpleDirectedGraph<String, InformativeEdge>) this.candidateGraph.clone();
     LinkedList<String> stringsOne = new LinkedList<>();
     LinkedList<String> stringsTwo = new LinkedList<>();
 
@@ -108,7 +107,7 @@ public class FeedbackArcSetFinder {
     //    System.out.println("Final List: " + stringsFinal);
 
     List<String> visitedList = new ArrayList<>();
-    Set<DefaultEdge> listOfEdgesToRemove = new HashSet<>();
+    Set<InformativeEdge> listOfEdgesToRemove = new HashSet<>();
     for (String vertex : stringsFinal) {
       //      System.out.println("Checking: " + vertex);
       List<String> targetList = Graphs.successorListOf(this.candidateGraph, vertex);

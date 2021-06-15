@@ -17,14 +17,19 @@ package dev.meldau.sca;
  */
 
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.jgrapht.graph.DefaultEdge;
+import org.json.simple.JSONValue;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Set;
 
 @Mojo(name = "sca-cycles", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
@@ -58,7 +63,35 @@ public class SCACyclesMojo extends AbstractMojo {
     return new File(scaOutputDir.getAbsolutePath() + "/cycles");
   }
 
-  public void execute() throws MojoFailureException {
+  void saveFeedbackArcSetJSON(Set<InformativeEdge> feedbackArcSet) throws MojoExecutionException {
+    Log myLog = this.getLog();
+    ArrayList<ArrayList<String>> feedbackArcSetAL = new ArrayList<>();
+    for ( InformativeEdge edge : feedbackArcSet ) {
+      ArrayList<String> arc = new ArrayList<>();
+      arc.add(edge.getSource().toString());
+      arc.add(edge.getTarget().toString());
+      feedbackArcSetAL.add(arc);
+    }
+
+    String myPath = scaOutputDir.getAbsolutePath() + "/cycles/feedback-arc-set.json";
+    File myFile = new File(myPath);
+
+    // delete result file from previous run if it exists
+    if(myFile.isFile()) {
+      myFile.delete();
+    }
+
+    myLog.info("Writing Feedback Arc Set to JSON: " + myPath);
+
+    try (FileWriter resultsFile = new FileWriter(myPath)) {
+      resultsFile.write(JSONValue.toJSONString(feedbackArcSetAL));
+      resultsFile.flush();
+    } catch (IOException exception) {
+      throw new MojoExecutionException("Couldn't write result JSON-File");
+    }
+  }
+
+  public void execute() throws MojoFailureException, MojoExecutionException {
 
     // Create Directories if they don't exist
     for (File f : new File[] {scaOutputDir, getScaCyclesOutputDir()}) {
@@ -77,11 +110,16 @@ public class SCACyclesMojo extends AbstractMojo {
       mvnLog.info("Found cycles finding solution.");
       FeedbackArcSetFinder feedbackArcSetFinder =
           new FeedbackArcSetFinder(jdepsGraphCreator.getCycleGraph());
-      Set<DefaultEdge> feedbackArcSet = feedbackArcSetFinder.getFeedbackArcSet();
+      Set<InformativeEdge> feedbackArcSet = feedbackArcSetFinder.getFeedbackArcSet();
+      saveFeedbackArcSetJSON(feedbackArcSet);
       mvnLog.info("This is the likeliest Set of dependencies to remove: " + feedbackArcSet);
       if (breakOnCycle) {
         throw new MojoFailureException("There is a cycle dependency in the project. Aborting.");
       }
+      jdepsGraphCreator.saveGraphForReport(feedbackArcSet);
+    }
+    else {
+      jdepsGraphCreator.saveGraphForReport();
     }
   }
 }

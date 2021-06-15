@@ -16,9 +16,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Map;
 
 @Mojo(name = "sca-cycles-report", defaultPhase = LifecyclePhase.SITE, threadSafe = true)
 public class SCACyclesReportingMojo extends AbstractMavenReport {
@@ -28,6 +27,10 @@ public class SCACyclesReportingMojo extends AbstractMavenReport {
       readonly = true,
       required = true)
   protected File outputDirectory;
+
+  @Parameter(defaultValue = "${project.build.directory}", readonly = true, required = true)
+  protected File pluginOutputDirectory;
+
   @Parameter(defaultValue = "${project}", readonly = true, required = true)
   private MavenProject project;
   /** sca output Directory */
@@ -61,21 +64,51 @@ public class SCACyclesReportingMojo extends AbstractMavenReport {
       }
     }
 
-    // Read JSON Results from previous cohesion run
+    // Read JSON Results from previous cycles run
     JSONParser jsonParser = new JSONParser();
-    Map<String, Long> myMap = null;
+    ArrayList<ArrayList<String>> feedbackArcSet = new ArrayList<>();
     try {
-      File cohesionJSONFile =
-          new File(scaOutputDir.getAbsolutePath() + "/sca-cohesion-results.json");
-      FileReader cohesionJSONFileReader = new FileReader(cohesionJSONFile);
-      myMap = (HashMap<String, Long>) jsonParser.parse(cohesionJSONFileReader);
-      myLog.info("Map:" + myMap);
+      File feedbackArcSetJSONFile =
+          new File(scaOutputDir.getAbsolutePath() + "/cycles/feedback-arc-set.json");
+      if (feedbackArcSetJSONFile.isFile()) {
+        FileReader cohesionJSONFileReader = new FileReader(feedbackArcSetJSONFile);
+        feedbackArcSet = (ArrayList<ArrayList<String>>) jsonParser.parse(cohesionJSONFileReader);
+      }
+      myLog.info("List:" + feedbackArcSet);
     } catch (FileNotFoundException e) {
       myLog.error(
-          "Problems reading sca-output/sca-cohesion-output.json. Did you run the sca-cohesion target first?");
+          "Problems reading sca-output/cycles/feedback-arc-set.json. Did you run the sca-cycles target first?");
       e.printStackTrace();
     } catch (ParseException | IOException e) {
       e.printStackTrace();
+    }
+
+    // Get Image File of Graph
+    File cyclesGraph =
+        new File(
+            scaOutputDir.getAbsolutePath()
+                + "/cycles/"
+                + pluginOutputDirectory.getName()
+                + "_clean_colored.png");
+    File cyclesGraphCopy =
+        new File(
+            outputDirectory.getAbsolutePath()
+                + "/"
+                + pluginOutputDirectory.getName()
+                + "_clean_colored.png");
+
+    try {
+      if (cyclesGraphCopy.exists()) {
+        if (!cyclesGraphCopy.delete()) {
+          throw new MavenReportException(
+              "Couldn't delete old version of image: " + cyclesGraphCopy.getAbsoluteFile());
+        }
+      }
+      Files.createLink(
+          cyclesGraphCopy.getAbsoluteFile().toPath(), cyclesGraph.getAbsoluteFile().toPath());
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new MavenReportException("Problems while linking Image Files");
     }
 
     // Get the Maven Doxia Sink, which will be used to generate the
@@ -89,53 +122,34 @@ public class SCACyclesReportingMojo extends AbstractMavenReport {
     // Header incl. Title
     mainSink.head();
     mainSink.title();
-    mainSink.text("SCA Report");
+    mainSink.text("SCA Cycles Report");
     mainSink.title_();
     mainSink.head_();
 
     mainSink.body();
-
-    // Average, best and worst score
-
-    for (Map.Entry<String, Long> classEntry : myMap.entrySet()) {
-      myLog.debug("Cohesion Score for " + classEntry.getKey() + ": " + classEntry.getValue());
-      if (classEntry.getValue() < 1) {
-        continue;
+    mainSink.section1();
+    mainSink.sectionTitle1();
+    mainSink.text("Dependency Cycle Finder Report");
+    mainSink.sectionTitle1_();
+    if (feedbackArcSet.isEmpty()) {
+      mainSink.text("No cycles have been found.");
+    } else {
+      mainSink.text("Loops have been found! Here is a suggested set of dependencies to remove:");
+      for (ArrayList<String> arc : feedbackArcSet) {
+        mainSink.paragraph();
+        mainSink.text(arc.get(0) + " => " + arc.get(1));
+        mainSink.paragraph_();
       }
-            String imageFileName = classEntry.getKey().replace("/", "_") + "_lcom_graph.png";
-            File imageFile = new File(outputDirectory.getAbsolutePath() + "/" + imageFileName);
-            myLog.debug("Path for ImageFile: " + imageFile.getAbsoluteFile());
-            File linkImageFile =
-                    new File(scaOutputDir.getAbsolutePath() + "/" + imageFileName);
-            try {
-              if (imageFile.exists()) {
-                if (!imageFile.delete()) {
-                  throw new MavenReportException(
-                          "Couldn't delete old version of image: " + imageFile.getAbsoluteFile());
-                }
-              }
-              Files.createLink(
-                      imageFile.getAbsoluteFile().toPath(),
-       linkImageFile.getAbsoluteFile().toPath());
-            } catch (IOException e) {
-              e.printStackTrace();
-            }
-
-      myLog.debug("Cohesion Score for " + classEntry.getKey() + ": " + classEntry.getValue());
-      String[] splitClassName = classEntry.getKey().split("/");
-      String shortClassName = splitClassName[splitClassName.length - 1];
-      mainSink.section1();
-      mainSink.sectionTitle1();
-      mainSink.text("Report for class " + shortClassName + ":");
-      mainSink.sectionTitle1_();
-      mainSink.paragraph();
-      mainSink.text("LCOM Score: " + classEntry.getValue());
-      mainSink.paragraph_();
-      mainSink.figure();
-      mainSink.figureGraphics(imageFileName);
-      mainSink.figure_();
-      mainSink.section1_();
     }
+    if (cyclesGraph.isFile()) {
+      mainSink.figure();
+      mainSink.figureGraphics(cyclesGraphCopy.getAbsolutePath());
+      mainSink.figure_();
+    }
+    else {
+      mainSink.text("Unfortunately there is no Image File of the graph - did the sca-cycles Plugin run first?");
+    }
+
     mainSink.body_();
   }
 
@@ -146,7 +160,7 @@ public class SCACyclesReportingMojo extends AbstractMavenReport {
 
   @Override
   public String getName(Locale locale) {
-    return getOutputName();
+    return "SCA: Cycles Report";
   }
 
   @Override
@@ -156,6 +170,6 @@ public class SCACyclesReportingMojo extends AbstractMavenReport {
 
   @Override
   public String getDescription(Locale locale) {
-    return getOutputName();
+    return "Cycles Report";
   }
 }

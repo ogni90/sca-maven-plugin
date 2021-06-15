@@ -1,6 +1,5 @@
 package dev.meldau.sca;
 
-import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,14 +42,14 @@ class JdepsGraphCreatorTest {
 
   @Test
   void getCycleGraph() {
-    SimpleDirectedGraph<String, DefaultEdge> loopGraph = jdepsGraphCreatorWithLoop.getCycleGraph();
+    SimpleDirectedGraph<String, InformativeEdge> loopGraph = jdepsGraphCreatorWithLoop.getCycleGraph();
     assertTrue(
         loopGraph.containsEdge(
             "dev.meldau.myjavamvntest.SuperThing", "dev.meldau.myjavamvntest.App"));
     assertTrue(
         loopGraph.containsEdge(
             "dev.meldau.myjavamvntest.App", "dev.meldau.myjavamvntest.SuperThing"));
-    SimpleDirectedGraph<String, DefaultEdge> looplessGraph =
+    SimpleDirectedGraph<String, InformativeEdge> looplessGraph =
         jdepsGraphCreatorWithoutLoop.getCycleGraph();
     assertTrue(
         looplessGraph.containsEdge(
