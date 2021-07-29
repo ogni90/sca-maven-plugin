@@ -36,6 +36,11 @@ import java.util.spi.ToolProvider;
  * limitations under the License.
  */
 
+/**
+ *  Create Java Dependencies Graph
+ *
+ * @author Ingo Meldau
+ */
 @SuppressFBWarnings("DM_DEFAULT_ENCODING")
 public class JdepsGraphCreator {
 
@@ -43,6 +48,10 @@ public class JdepsGraphCreator {
   private final File OUTPUT_DIR;
   private SimpleDirectedGraph<String, InformativeEdge> cycleGraph;
 
+  /**
+   *  Create Java Dependencies Graph of all files in classDir
+   *  save DOT files in outputDir
+   */
   public JdepsGraphCreator(File classDir, File outputDir) {
     this.CLASS_DIR = classDir;
     this.OUTPUT_DIR = outputDir;
@@ -59,7 +68,7 @@ public class JdepsGraphCreator {
     return cycleDetector.detectCycles();
   }
 
-  /** Runs jdeps to generate dot files */
+  /** Runs jdeps to generate DOT files */
   void createDotFiles() {
     // Initialize jdeps Tool
     Optional<ToolProvider> jdeps = ToolProvider.findFirst("jdeps");
@@ -85,6 +94,9 @@ public class JdepsGraphCreator {
     }
   }
 
+  /**
+   * Create dependency graph from DOT files
+   */
   void createGraph() {
     cycleGraph = new SimpleDirectedGraph<>(InformativeEdge.class);
 
@@ -105,6 +117,9 @@ public class JdepsGraphCreator {
     }
   }
 
+  /**
+   * Save graph as DOT and PNG for maven report
+   */
   void saveGraphForReport() throws MojoExecutionException {
     try (InputStream dot =
         new FileInputStream(
@@ -126,12 +141,16 @@ public class JdepsGraphCreator {
     }
   }
 
+  /**
+   * Save graph as DOT and PNG for maven report
+   * Edges that are part of the Feedback Arc Set are colored in red
+   */
   void saveGraphForReport(Set<InformativeEdge> feedbackArcSet) throws MojoExecutionException {
     try (InputStream dot =
         new FileInputStream(
             OUTPUT_DIR.getAbsolutePath() + "/" + CLASS_DIR.getName() + "_clean.dot")) {
       MutableGraph g = new Parser().read(dot);
-      // Display edges which are part of the FAC in bold Red
+      // Display edges which are part of the FAS in bold Red
       for (Link edge : g.edges()) {
         for (InformativeEdge arc : feedbackArcSet) {
           if (Objects.requireNonNull(edge.from())

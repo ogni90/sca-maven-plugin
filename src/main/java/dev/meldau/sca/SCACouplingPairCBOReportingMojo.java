@@ -39,6 +39,11 @@ import static org.apache.maven.doxia.sink.Sink.JUSTIFY_LEFT;
  * limitations under the License.
  */
 
+/**
+ * Pairwise Coupling Between Objects (pair CBO) Reporting Mojo
+ *
+ * @author Ingo Meldau
+ */
 @SuppressFBWarnings("DM_DEFAULT_ENCODING")
 @Mojo(name = "sca-coupling-pair-cbo-report", defaultPhase = LifecyclePhase.SITE, threadSafe = true)
 public class SCACouplingPairCBOReportingMojo extends AbstractMavenReport {
@@ -58,6 +63,11 @@ public class SCACouplingPairCBOReportingMojo extends AbstractMavenReport {
       defaultValue = "${project.build.directory}/sca-output")
   private File scaOutputDir;
 
+  /**
+   * Get report output directory
+   *
+   * @return outputDirectory
+   */
   @Override
   protected String getOutputDirectory() {
     getLog().info(outputDirectory.toString());
@@ -65,6 +75,9 @@ public class SCACouplingPairCBOReportingMojo extends AbstractMavenReport {
     return outputDirectory.toString();
   }
 
+  /**
+   * Build pairwise CBO Report with Maven Site Plugin
+   */
   @edu.umd.cs.findbugs.annotations.SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
   @Override
   protected void executeReport(Locale locale) throws MavenReportException {
@@ -100,7 +113,7 @@ public class SCACouplingPairCBOReportingMojo extends AbstractMavenReport {
       myLog.info("Array:" + pairCBOList);
     } catch (FileNotFoundException e) {
       myLog.error(
-          "Problems reading sca-output/sca-coupling-cbo-results.json Did you run the sca-cohesion target first?");
+          "Problems reading sca-output/sca-coupling-pair-cbo-results.json Did you run the sca-cohesion target first?");
       e.printStackTrace();
     } catch (ParseException | IOException e) {
       e.printStackTrace();

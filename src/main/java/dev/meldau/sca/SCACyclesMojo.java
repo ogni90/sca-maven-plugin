@@ -32,6 +32,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
 
+
+/**
+ * Searches for cyclic dependcies
+ * if cyclic dependencies are found a FeedbackArcSet is calculated
+ * to show the user which dependencies may be removed to break the cycle
+ *
+ * @author Ingo Meldau
+*/
 @SuppressFBWarnings("DM_DEFAULT_ENCODING")
 @Mojo(name = "sca-cycles", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
 public class SCACyclesMojo extends AbstractMojo {
@@ -52,13 +60,16 @@ public class SCACyclesMojo extends AbstractMojo {
   private File scaOutputDir;
 
   /**
-   * getter for sca output Directory (cannot use Parameter because inheriting of other defaults from
-   * annotations is not possible)
+   * Getter for sca cycles output directory
+   * (cannot use Parameter because inheriting of other defaults from annotations is not possible)
    */
   private File getScaCyclesOutputDir() {
     return new File(scaOutputDir.getAbsolutePath() + "/cycles");
   }
 
+  /**
+   * Save FeedbackArcSet as JSON
+   */
   @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
   void saveFeedbackArcSetJSON(Set<InformativeEdge> feedbackArcSet) throws MojoExecutionException {
     Log myLog = this.getLog();
@@ -89,6 +100,11 @@ public class SCACyclesMojo extends AbstractMojo {
     }
   }
 
+  /**
+   *  Create and Save java dependency graph.<!-- -->
+   *  Calculate FeedbackArcSet (FAS) in case of cyclic dependencies
+   *  to show the likeliest set of dependencies that may be removed to break the cycle
+   */
   @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
   public void execute() throws MojoFailureException, MojoExecutionException {
 

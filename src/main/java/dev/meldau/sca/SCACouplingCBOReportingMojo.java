@@ -42,6 +42,11 @@ import static org.apache.maven.doxia.sink.Sink.JUSTIFY_LEFT;
  * limitations under the License.
  */
 
+/**
+ * Coupling Between Objects (CBO) Reporting Mojo
+ *
+ * @author Ingo Meldau
+ */
 @SuppressFBWarnings("DM_DEFAULT_ENCODING")
 @Mojo(name = "sca-coupling-cbo-report", defaultPhase = LifecyclePhase.SITE, threadSafe = true)
 public class SCACouplingCBOReportingMojo extends AbstractMavenReport {
@@ -61,6 +66,11 @@ public class SCACouplingCBOReportingMojo extends AbstractMavenReport {
       defaultValue = "${project.build.directory}/sca-output")
   private File scaOutputDir;
 
+  /**
+   * Get report output directory
+   *
+   * @return outputDirectory
+   */
   @Override
   protected String getOutputDirectory() {
     getLog().info(outputDirectory.toString());
@@ -68,6 +78,9 @@ public class SCACouplingCBOReportingMojo extends AbstractMavenReport {
     return outputDirectory.toString();
   }
 
+  /**
+   * Build CBO Report with Maven Site Plugin
+   */
   @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
   @Override
   protected void executeReport(Locale locale) throws MavenReportException {
@@ -86,7 +99,7 @@ public class SCACouplingCBOReportingMojo extends AbstractMavenReport {
       }
     }
 
-    // Read JSON Results from previous cohesion run
+    // Read JSON Results from previous CBO run
     JSONParser jsonParser = new JSONParser();
     HashMap<String, HashMap<String, Integer>> myMap = null;
     try {

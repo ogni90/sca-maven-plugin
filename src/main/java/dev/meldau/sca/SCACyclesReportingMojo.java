@@ -36,6 +36,11 @@ import java.util.Locale;
  * limitations under the License.
  */
 
+/**
+ * Cyclic dependencies reporting Mojo
+ *
+ * @author Ingo Meldau
+ */
 @SuppressFBWarnings("DM_DEFAULT_ENCODING")
 @Mojo(name = "sca-cycles-report", defaultPhase = LifecyclePhase.SITE, threadSafe = true)
 public class SCACyclesReportingMojo extends AbstractMavenReport {
@@ -58,6 +63,11 @@ public class SCACyclesReportingMojo extends AbstractMavenReport {
       defaultValue = "${project.build.directory}/sca-output")
   private File scaOutputDir;
 
+  /**
+   * Get report output directory
+   *
+   * @return outputDirectory
+   */
   @Override
   protected String getOutputDirectory() {
     getLog().info(outputDirectory.toString());
@@ -65,6 +75,9 @@ public class SCACyclesReportingMojo extends AbstractMavenReport {
     return outputDirectory.toString();
   }
 
+  /**
+   * Build Cyclic Dependency Report with Maven Site Plugin
+   */
   @Override
   protected void executeReport(Locale locale) throws MavenReportException {
     // initialize Logger

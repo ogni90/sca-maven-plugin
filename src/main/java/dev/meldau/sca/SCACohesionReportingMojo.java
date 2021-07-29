@@ -38,6 +38,11 @@ import java.util.Objects;
  * limitations under the License.
  */
 
+/**
+ * Cohesion Reporting Mojo
+ *
+ * @author Ingo Meldau
+ */
 @SuppressFBWarnings("DM_DEFAULT_ENCODING")
 @Mojo(name = "sca-cohesion-report", defaultPhase = LifecyclePhase.SITE, threadSafe = true)
 public class SCACohesionReportingMojo extends AbstractMavenReport {
@@ -57,6 +62,11 @@ public class SCACohesionReportingMojo extends AbstractMavenReport {
       defaultValue = "${project.build.directory}/sca-output")
   private File scaOutputDir;
 
+  /**
+   * Get report output directory
+   *
+   * @return outputDirectory
+   */
   @Override
   protected String getOutputDirectory() {
     getLog().info(outputDirectory.toString());
@@ -64,6 +74,9 @@ public class SCACohesionReportingMojo extends AbstractMavenReport {
     return outputDirectory.toString();
   }
 
+  /**
+   * Build Cohesion Report with Maven Site Plugin
+   */
   @Override
   protected void executeReport(Locale locale) throws MavenReportException {
     // initialize Logger
@@ -110,7 +123,7 @@ public class SCACohesionReportingMojo extends AbstractMavenReport {
     // Header incl. Title
     mainSink.head();
     mainSink.title();
-    mainSink.text("SCA Report");
+    mainSink.text("SCA Cohesion Report");
     mainSink.title_();
     mainSink.head_();
 
