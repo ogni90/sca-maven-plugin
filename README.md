@@ -45,7 +45,7 @@ The following requirements must be met, to be able to use this plugin:
 To install the Plugin, Download the latest release from the GitHub Releases Page.
 To install the JAR-File to your local maven repository use this command:
 ```
-mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=sca-maven-plugin-1.0-SNAPSHOT.jar
+mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=sca-maven-plugin-v0.45.jar
 ```
 
 ## Usage
@@ -80,7 +80,7 @@ To automatically run the desired goals just add the plugin to the build plugins.
     <plugin>
       <groupId>dev.meldau.sca</groupId>
       <artifactId>sca-maven-plugin</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>v0.45</version>
       <executions>
         <execution>
           <phase>test</phase>
@@ -105,7 +105,7 @@ the reporting section in the pom.xml file.
       <plugin>
         <groupId>dev.meldau.sca</groupId>
         <artifactId>sca-maven-plugin</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>v0.45</version>
       </plugin>
     </plugins>
   </reporting>
@@ -126,7 +126,7 @@ configuration to the pom.xml file. The possible configurations are shown in the 
         <plugin>
           <groupId>dev.meldau.sca</groupId>
           <artifactId>sca-maven-plugin</artifactId>
-          <version>1.0-SNAPSHOT</version>
+          <version>v0.45</version>
           <configuration>
             <breakOnCycle>true</breakOnCycle> <!-- break on cyclic dependencies -->
             <!-- TODO: Add other configurations -->
