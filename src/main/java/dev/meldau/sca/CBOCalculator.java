@@ -23,7 +23,9 @@ import java.util.HashMap;
 
 /**
  * This class calculates the Coupling Between Objects metric for a provided program in form of a
- * multigraph.
+ * multigraph
+ *
+ * @author Ingo Meldau
  */
 public class CBOCalculator {
 
@@ -33,6 +35,11 @@ public class CBOCalculator {
     this.CLASS_GRAPH = classGraph;
   }
 
+  /**
+   * Calculate Coupling Between Objects via degree, in degree and out degree of the class graph
+   *
+   * @return CBOScores
+   */
   HashMap<String, HashMap<String, Integer>> calculateCBO() {
     HashMap<String, HashMap<String, Integer>> CBOScores = new HashMap<>();
     for (String vertex : CLASS_GRAPH.vertexSet()) {
@@ -45,6 +52,11 @@ public class CBOCalculator {
     return CBOScores;
   }
 
+  /**
+   * Calculate pairwise Coupling Between Objects via sum of all edges between each vertex pair
+   *
+   * @return pairCBOListOfLists
+   */
   ArrayList<ArrayList<String>> calculatePairCBO() {
     // Array with list of pairs and respective values
     ArrayList<ArrayList<String>> pairCBOListOfLists = new ArrayList<>();

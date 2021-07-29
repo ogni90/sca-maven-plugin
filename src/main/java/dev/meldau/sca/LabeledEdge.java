@@ -20,7 +20,7 @@ import org.jgrapht.graph.DefaultEdge;
 
 /**
  * Class which extends DefaultEdge of jgrapht by adding Labels. These Labels represent different
- * types of Coupling between classes In future releases this could be used to calculate better
+ * types of Coupling between classes. In future releases this could be used to calculate better
  * metrics by giving each type a weight.
  *
  * @author Ingo Meldau
@@ -50,7 +50,7 @@ public class LabeledEdge extends DefaultEdge {
   }
 
   /**
-   * set type of connection (enum)
+   * Set type of connection (enum)
    *
    * @param connectionType Type of connection. Defined in enum.
    */
@@ -60,7 +60,7 @@ public class LabeledEdge extends DefaultEdge {
   }
 
   /**
-   * This function returns the source of the directed Edge. This function is overwritten because it
+   * This function returns the source of the directed Edge.<!-- --> This function is overwritten because it
    * is needed for testing and private in the super class.
    *
    * @return source (String)
@@ -71,7 +71,7 @@ public class LabeledEdge extends DefaultEdge {
   }
 
   /**
-   * This function returns the target of the directed Edge. This function is overwritten because it
+   * This function returns the target of the directed Edge.<!-- --> This function is overwritten because it
    * is needed for testing and private in the super class.
    *
    * @return target String

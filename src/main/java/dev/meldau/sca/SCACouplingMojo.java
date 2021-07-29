@@ -32,6 +32,11 @@ import java.util.HashMap;
  * limitations under the License.
  */
 
+/**
+ * This Mojo can be used for calculating Coupling Between Objects (CBO).
+ *
+ * @author Ingo Meldau
+ */
 @SuppressFBWarnings({"DM_DEFAULT_ENCODING", "DM_DEFAULT_ENCODING"})
 @Mojo(name = "sca-coupling", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
 public class SCACouplingMojo extends AbstractMojo {
@@ -48,6 +53,9 @@ public class SCACouplingMojo extends AbstractMojo {
 
   private Log myLog;
 
+  /**
+   * Save CBO results as JSON
+   */
   void saveCBOResultJSON(HashMap<String, HashMap<String, Integer>> myCBOScores)
       throws MojoExecutionException {
     String myPath = scaOutputDir.getAbsolutePath() + "/sca-coupling-cbo-results.json";
@@ -61,6 +69,9 @@ public class SCACouplingMojo extends AbstractMojo {
     }
   }
 
+  /**
+   * Save pairwise CBO results as JSON
+   */
   void savePairCBOResultJSON(ArrayList<ArrayList<String>> myCBOScores)
       throws MojoExecutionException {
     String myPath = scaOutputDir.getAbsolutePath() + "/sca-coupling-pair-cbo-results.json";
@@ -74,6 +85,9 @@ public class SCACouplingMojo extends AbstractMojo {
     }
   }
 
+  /**
+   * Calculates CBO and pairwise CBO values for all classes and saves the results as JSON
+   */
   @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
   @Override
   public void execute() throws MojoExecutionException {

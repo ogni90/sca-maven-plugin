@@ -25,6 +25,8 @@ import java.util.*;
  * Implements FeedbackArcSet Algorithm from
  * https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.47.7745&rep=rep1&type=pdf as Proposed
  * by Eades, Lin and Smyth
+ *
+ * @author Ingo Meldau
  */
 public class FeedbackArcSetFinder {
 
@@ -65,7 +67,7 @@ public class FeedbackArcSetFinder {
   }
 
   /**
-   * finds the first vertex with the lowest outDegree - inDegree ratio
+   * Finds one vertex with the highest outDegree - inDegree ratio
    *
    * @return bestVertex
    */
@@ -85,7 +87,13 @@ public class FeedbackArcSetFinder {
     return bestVertex;
   }
 
-  /** @return Set<InformativeEdge> */
+  /**
+   * Get Feedback Arc Set
+   *
+   * <p>calculates set of edges that are most likely to be removed to break any cyclic dependencies
+   *
+   * @return {@code Set<InformativeEdge>}
+   */
   public Set<InformativeEdge> getFeedbackArcSet() {
     // This will always be OK. The compiler just doesn't feel that way.
     @SuppressWarnings("unchecked")
@@ -94,45 +102,48 @@ public class FeedbackArcSetFinder {
     LinkedList<String> stringsOne = new LinkedList<>();
     LinkedList<String> stringsTwo = new LinkedList<>();
 
+    // this while loop repeats until there are no vertices left in the graph
     while (!workingGraph.vertexSet().isEmpty()) {
+      // all Sinks get removed from the graph and added to stringsTwo until there are no sinks left
       List<String> listOfSinks;
       while (!(listOfSinks = this.getSinks(workingGraph)).isEmpty()) {
         for (String sink : listOfSinks) {
           stringsTwo.addFirst(sink);
           workingGraph.removeVertex(sink);
-          //          System.out.println("Removed sink: " + sink);
         }
       }
+
+      // All sources get removed from the graph and added to stringsOne until there are no sources
+      // left
       List<String> listOfSources;
       while (!(listOfSources = this.getSources(workingGraph)).isEmpty()) {
         for (String source : listOfSources) {
           stringsOne.addLast(source);
           workingGraph.removeVertex(source);
-          //          System.out.println("Removed source: " + source);
         }
       }
+
+      // Calculates the next vertice to be removed from the graph basd on in-/outdegree ratio
       if (!workingGraph.vertexSet().isEmpty()) {
         String vertexToRemove = this.getHighestOutDegreeInDegreeRatio(workingGraph);
         workingGraph.removeVertex(vertexToRemove);
         stringsOne.addLast(vertexToRemove);
-        //        System.out.println("Removed calculated Vertex: " + vertexToRemove);
       }
     }
+    // combine the two lists
     LinkedList<String> stringsFinal = new LinkedList<>();
     stringsFinal.addAll(stringsOne);
     stringsFinal.addAll(stringsTwo);
-    //    System.out.println("Final List: " + stringsFinal);
 
+    // Check for "arrows to the left" in the ordered by our stringsFinal List graph and add
+    // those to the list of edges to remove
     List<String> visitedList = new ArrayList<>();
     Set<InformativeEdge> listOfEdgesToRemove = new HashSet<>();
     for (String vertex : stringsFinal) {
-      //      System.out.println("Checking: " + vertex);
       List<String> targetList = Graphs.successorListOf(this.candidateGraph, vertex);
       if (!Collections.disjoint(visitedList, targetList)) {
-        //        System.out.println("Found arc back");
         for (String target : targetList) {
           if (visitedList.contains(target)) {
-            //            System.out.println("Found edge " + vertex + " " + target);
             listOfEdgesToRemove.add(this.candidateGraph.getEdge(vertex, target));
           }
         }

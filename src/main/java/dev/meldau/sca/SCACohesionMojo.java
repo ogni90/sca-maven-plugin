@@ -31,6 +31,12 @@ import java.util.Map;
  * limitations under the License.
  */
 
+/**
+ * This Mojo can be used for calculating code cohesion.
+ * Cohesion is based on LCOM scores
+ *
+ * @author Ingo Meldau
+ */
 @SuppressFBWarnings("DM_DEFAULT_ENCODING")
 @Mojo(name = "sca-cohesion", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
 public class SCACohesionMojo extends AbstractMojo {
@@ -47,6 +53,9 @@ public class SCACohesionMojo extends AbstractMojo {
       defaultValue = "${project.build.directory}/sca-output")
   private File scaOutputDir;
 
+  /**
+   * Save cohesion results as JSON
+   */
   void saveResultJSON(Map<String, Integer> myLcomScores) throws MojoExecutionException {
     String myPath = scaOutputDir.getAbsolutePath() + "/sca-cohesion-results.json";
     myLog.info("Writing Results JSON: " + myPath);
@@ -59,6 +68,9 @@ public class SCACohesionMojo extends AbstractMojo {
     }
   }
 
+  /**
+   * Calculates LCOM scores for all classes and saves the results as JSON
+   */
   @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
   @Override
   public void execute() throws MojoExecutionException {

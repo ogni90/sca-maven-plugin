@@ -23,6 +23,11 @@ import java.util.ListIterator;
  * limitations under the License.
  */
 
+/**
+ * Finds all class files in a given directory
+ *
+ * @author Ingo Meldau
+ */
 public class ClassFileFinder {
   final File SEARCH_DIR;
 
@@ -30,6 +35,11 @@ public class ClassFileFinder {
     this.SEARCH_DIR = searchDir;
   }
 
+  /**
+   * Finds all class files (.class) in SEARCH_DIR
+   *
+   * @return classFiles
+   */
   public ArrayList<File> getClassFiles() throws FileNotFoundException {
     if (!SEARCH_DIR.exists()) {
       throw new FileNotFoundException("Directory that should contain class Files not existent.");

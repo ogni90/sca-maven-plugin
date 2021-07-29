@@ -32,6 +32,11 @@ import java.util.*;
  * limitations under the License.
  */
 
+/**
+ * Implements LCOM Score Calculation (Lack Of Cohesion in Methods) as proposed by Hitz and Montazeri in 1995
+ * https://www.researchgate.net/profile/Martin-Hitz/publication/2765140_Measuring_Product_Attributes_of_Object-Oriented_Systems/links/0912f51091f5fa52aa000000/Measuring-Product-Attributes-of-Object-Oriented-Systems.pdf
+ * @author Ingo Meldau
+ */
 @SuppressFBWarnings("DM_DEFAULT_ENCODING")
 public class LCOMScoreCalculator {
 
@@ -48,6 +53,9 @@ public class LCOMScoreCalculator {
     return LCOMScores;
   }
 
+  /**
+   * Calculate LCOM Scores in all CLASS_FILES and write them to LCOMScores
+   */
   private void calculateScores() throws IOException {
 
     // Create Hashmap to return
@@ -112,7 +120,7 @@ public class LCOMScoreCalculator {
         methodUsesMap.put(cleanInternalName(method.name), myMethodFields);
         methodCallsMap.put(cleanInternalName(method.name), myMethodCalls);
       }
-      // Iterate over found methods find edges for graph using mutual used fields
+      // Iterate over found methods and add edges to LCOM graph using mutual used fields
       for (String method : LCOMGraph.get(cleanInternalName(myClassNode.name)).vertexSet()) {
         for (String usedField : methodUsesMap.get(method)) {
           for (String secondMethod :
@@ -130,7 +138,7 @@ public class LCOMScoreCalculator {
           }
         }
       }
-      // Iterate over found methods find edges for graph using calls
+      // Iterate over found methods and add edges to LCOM graph using calls
       for (String method : LCOMGraph.get(cleanInternalName(myClassNode.name)).vertexSet()) {
         for (String secondMethod : methodCallsMap.get(method)) {
           if (!secondMethod.equals(method)
@@ -153,6 +161,9 @@ public class LCOMScoreCalculator {
     // TODO:    saveResultJSON(myLCOMScores);
   }
 
+  /**
+   * Save LCOM graph as DOT and PNG
+   */
   public void saveGraph(File targetDir) throws IOException {
     DOTExporter<String, DefaultEdge> dotExporter = new DOTExporter<>(v -> v.replace("/", "_"));
     for (HashMap.Entry<String, Graph<String, DefaultEdge>> graphEntry : LCOMGraph.entrySet()) {
