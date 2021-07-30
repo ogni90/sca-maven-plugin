@@ -3,6 +3,7 @@ package dev.meldau.sca;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -14,6 +15,8 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
+
+import static java.util.Collections.max;
 
 /*
  * Copyright 2020-2021 Ingo Meldau
@@ -53,6 +56,10 @@ public class SCACohesionMojo extends AbstractMojo {
       defaultValue = "${project.build.directory}/sca-output")
   private File scaOutputDir;
 
+  /** If this parameter is not zero, the build will break, if the metric goes beyond this threshold*/
+  @Parameter(name = "breakOnLCOM", required = true, defaultValue = "0")
+  int breakOnLCOM;
+
   /**
    * Save cohesion results as JSON
    */
@@ -73,7 +80,7 @@ public class SCACohesionMojo extends AbstractMojo {
    */
   @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
   @Override
-  public void execute() throws MojoExecutionException {
+  public void execute() throws MojoExecutionException, MojoFailureException {
     /* Maven Log Variable */
     myLog = this.getLog();
 
@@ -107,5 +114,11 @@ public class SCACohesionMojo extends AbstractMojo {
     saveResultJSON(lcomScores);
 
     myLog.info("LCOM Scores: " + lcomScores);
+
+    // Check if configured threshold for LCOM Metric is exceeded
+    if (breakOnLCOM != 0 && max(lcomScores.values()) > breakOnLCOM) {
+      throw new MojoFailureException("The threshold for the LCOM metric is exceeded.");
+    }
+
   }
 }

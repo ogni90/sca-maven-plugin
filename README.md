@@ -129,7 +129,9 @@ configuration to the pom.xml file. The possible configurations are shown in the 
           <version>1.0-SNAPSHOT</version>
           <configuration>
             <breakOnCycle>true</breakOnCycle> <!-- break on cyclic dependencies -->
-            <!-- TODO: Add other configurations -->
+            <breakOnLCOM>10</breakOnLCOM> <!-- break on LCOM higher than value -->
+            <breakOnCBO>10</breakOnCBO> <!-- break on CBO higher than value -->
+            <breakOnPairCBO>10</breakOnPairCBO> <!-- break on Pair-CBO higher than value -->
           </configuration>
         </plugin>
       </plugins>

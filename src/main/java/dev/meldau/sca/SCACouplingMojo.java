@@ -3,10 +3,12 @@ package dev.meldau.sca;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.jgrapht.alg.util.Pair;
 import org.jgrapht.graph.DirectedMultigraph;
 import org.json.simple.JSONValue;
 
@@ -15,6 +17,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static java.util.Collections.max;
 
 /*
  * Copyright 2020-2021 Ingo Meldau
@@ -43,7 +47,12 @@ public class SCACouplingMojo extends AbstractMojo {
   /** Location of the file. */
   @Parameter(property = "project.build.directory", required = true, readonly = true)
   private File outputDirectory;
-
+  /** break threshold for CBO */
+  @Parameter(name = "breakOnCBO", required = true, defaultValue = "0")
+  int breakOnCBO;
+  /** break threshold for Pair-CBO */
+  @Parameter(name = "breakOnPairCBO", required = true, defaultValue = "0")
+  int breakOnPairCBO;
   /** sca output Directory */
   @Parameter(
       name = "scaOutputDir",
@@ -90,7 +99,7 @@ public class SCACouplingMojo extends AbstractMojo {
    */
   @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
   @Override
-  public void execute() throws MojoExecutionException {
+  public void execute() throws MojoExecutionException, MojoFailureException {
     myLog = this.getLog();
 
     // Create target dir and cycles-output dir in target if they don't exist
@@ -125,5 +134,22 @@ public class SCACouplingMojo extends AbstractMojo {
 
     saveCBOResultJSON(CBOValues);
     savePairCBOResultJSON(PairCBOValues);
+
+    // Check if CBO Metric exceeds configured threshold
+    if (breakOnCBO != 0) {
+      for ( HashMap<String, Integer> result : CBOValues.values()) {
+        if (max(result.values()) > breakOnCBO) {
+          throw new MojoFailureException("The threshold for the CBO metric is exceeded.");
+        }
+      }
+    }
+    // Check if Pair-CBO Metric exceeds configured threshold
+    if (breakOnPairCBO != 0 ) {
+      for (ArrayList<String> values : PairCBOValues) {
+        if ( Integer.parseInt(values.get(2)) > breakOnPairCBO ) {
+          throw new MojoFailureException("The threshold for the Pair-CBO metric is exceeded.");
+        }
+      }
+    }
   }
 }
