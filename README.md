@@ -38,7 +38,7 @@ To be able to calculate coupling metrics, the Plugin builds a graph of all class
 connections between classes (edges) in the tested software.
 
 ### Coupling Between Objects(CBO)
-To calculate the classic CBO Metric all connections from a single class are added up.
+To calculate the classic CBO Metric all classes reachable with one edge, starting from the rated class, are added up.
 The lower this number is, the better.
 
 ### Pair Coupling Between Objects (Pair-CBO)

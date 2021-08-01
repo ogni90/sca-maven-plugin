@@ -101,7 +101,7 @@ public class SCACouplingCBOReportingMojo extends AbstractMavenReport {
 
     // Read JSON Results from previous CBO run
     JSONParser jsonParser = new JSONParser();
-    HashMap<String, HashMap<String, Integer>> myMap = null;
+    HashMap<String, Integer> myMap = null;
     try {
       File couplingCBOJSONFile =
           new File(scaOutputDir.getAbsolutePath() + "/sca-coupling-cbo-results.json");
@@ -112,7 +112,7 @@ public class SCACouplingCBOReportingMojo extends AbstractMavenReport {
       FileReader couplingCBOJSONFileReader = new FileReader(couplingCBOJSONFile);
       //noinspection unchecked
       myMap =
-          (HashMap<String, HashMap<String, Integer>>) jsonParser.parse(couplingCBOJSONFileReader);
+          (HashMap<String, Integer>) jsonParser.parse(couplingCBOJSONFileReader);
       myLog.info("Map:" + myMap);
     } catch (FileNotFoundException e) {
       myLog.error(
@@ -197,19 +197,19 @@ public class SCACouplingCBOReportingMojo extends AbstractMavenReport {
     mainSink.tableRows_();
     mainSink.table_();
 
-    for (Map.Entry<String, HashMap<String, Integer>> classEntry :
+    for (Map.Entry<String, Integer> classEntry :
         Objects.requireNonNull(myMap).entrySet()) {
       myLog.debug(
           "Coupling CBO score for "
               + classEntry.getKey()
               + ": "
-              + classEntry.getValue().get("degree"));
+              + classEntry.getValue());
       mainSink.section2();
       mainSink.sectionTitle2();
       mainSink.text("Report for class " + classEntry.getKey() + ":");
       mainSink.sectionTitle2_();
       mainSink.paragraph();
-      mainSink.text("CBO Score: " + classEntry.getValue().get("degree"));
+      mainSink.text("CBO Score: " + classEntry.getValue());
       mainSink.paragraph_();
       mainSink.section2_();
     }

@@ -65,7 +65,7 @@ public class SCACouplingMojo extends AbstractMojo {
   /**
    * Save CBO results as JSON
    */
-  void saveCBOResultJSON(HashMap<String, HashMap<String, Integer>> myCBOScores)
+  void saveCBOResultJSON(HashMap<String, Integer> myCBOScores)
       throws MojoExecutionException {
     String myPath = scaOutputDir.getAbsolutePath() + "/sca-coupling-cbo-results.json";
     myLog.info("Writing Results JSON: " + myPath);
@@ -110,7 +110,7 @@ public class SCACouplingMojo extends AbstractMojo {
       }
     }
 
-    HashMap<String, HashMap<String, Integer>> CBOValues;
+    HashMap<String, Integer> CBOValues;
     ArrayList<ArrayList<String>> PairCBOValues;
 
     try {
@@ -137,12 +137,11 @@ public class SCACouplingMojo extends AbstractMojo {
 
     // Check if CBO Metric exceeds configured threshold
     if (breakOnCBO != 0) {
-      for ( HashMap<String, Integer> result : CBOValues.values()) {
-        if (max(result.values()) > breakOnCBO) {
+        if (max(CBOValues.values()) > breakOnCBO) {
           throw new MojoFailureException("The threshold for the CBO metric is exceeded.");
         }
-      }
     }
+
     // Check if Pair-CBO Metric exceeds configured threshold
     if (breakOnPairCBO != 0 ) {
       for (ArrayList<String> values : PairCBOValues) {

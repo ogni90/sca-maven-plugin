@@ -4,6 +4,8 @@ import org.jgrapht.graph.DirectedMultigraph;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /*
  * Copyright 2020-2021 Ingo Meldau
@@ -40,14 +42,15 @@ public class CBOCalculator {
    *
    * @return CBOScores
    */
-  HashMap<String, HashMap<String, Integer>> calculateCBO() {
-    HashMap<String, HashMap<String, Integer>> CBOScores = new HashMap<>();
+  HashMap<String, Integer> calculateCBO() {
+    HashMap<String, Integer> CBOScores = new HashMap<>();
     for (String vertex : CLASS_GRAPH.vertexSet()) {
-      HashMap<String, Integer> degrees = new HashMap<>();
-      degrees.put("degree", CLASS_GRAPH.degreeOf(vertex));
-      degrees.put("inDegree", CLASS_GRAPH.inDegreeOf(vertex));
-      degrees.put("outDegree", CLASS_GRAPH.outDegreeOf(vertex));
-      CBOScores.put(vertex, degrees);
+      Set<LabeledEdge> edgesFromVertex = CLASS_GRAPH.outgoingEdgesOf(vertex);
+      HashSet<String> targetVertices = new HashSet<String>();
+      for (LabeledEdge edge : edgesFromVertex) {
+        targetVertices.add(edge.getTarget().toString());
+      }
+      CBOScores.put(vertex, targetVertices.size());
     }
     return CBOScores;
   }
