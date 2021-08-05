@@ -37,7 +37,7 @@ import java.util.spi.ToolProvider;
  */
 
 /**
- *  Create Java Dependencies Graph
+ * Create Java Dependencies Graph
  *
  * @author Ingo Meldau
  */
@@ -48,10 +48,7 @@ public class JdepsGraphCreator {
   private final File OUTPUT_DIR;
   private SimpleDirectedGraph<String, InformativeEdge> cycleGraph;
 
-  /**
-   *  Create Java Dependencies Graph of all files in classDir
-   *  save DOT files in outputDir
-   */
+  /** Create Java Dependencies Graph of all files in classDir save DOT files in outputDir */
   public JdepsGraphCreator(File classDir, File outputDir) {
     this.CLASS_DIR = classDir;
     this.OUTPUT_DIR = outputDir;
@@ -94,9 +91,7 @@ public class JdepsGraphCreator {
     }
   }
 
-  /**
-   * Create dependency graph from DOT files
-   */
+  /** Create dependency graph from DOT files */
   void createGraph() {
     cycleGraph = new SimpleDirectedGraph<>(InformativeEdge.class);
 
@@ -117,9 +112,7 @@ public class JdepsGraphCreator {
     }
   }
 
-  /**
-   * Save graph as DOT and PNG for maven report
-   */
+  /** Save graph as DOT and PNG for maven report */
   void saveGraphForReport() throws MojoExecutionException {
     try (InputStream dot =
         new FileInputStream(
@@ -142,8 +135,8 @@ public class JdepsGraphCreator {
   }
 
   /**
-   * Save graph as DOT and PNG for maven report
-   * Edges that are part of the Feedback Arc Set are colored in red
+   * Save graph as DOT and PNG for maven report Edges that are part of the Feedback Arc Set are
+   * colored in red
    */
   void saveGraphForReport(Set<InformativeEdge> feedbackArcSet) throws MojoExecutionException {
     try (InputStream dot =

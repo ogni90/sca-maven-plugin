@@ -75,9 +75,7 @@ public class SCACyclesReportingMojo extends AbstractMavenReport {
     return outputDirectory.toString();
   }
 
-  /**
-   * Build Cyclic Dependency Report with Maven Site Plugin
-   */
+  /** Build Cyclic Dependency Report with Maven Site Plugin */
   @Override
   protected void executeReport(Locale locale) throws MavenReportException {
     // initialize Logger
@@ -177,9 +175,9 @@ public class SCACyclesReportingMojo extends AbstractMavenReport {
       mainSink.figure();
       mainSink.figureGraphics(cyclesGraphCopy.getAbsolutePath());
       mainSink.figure_();
-    }
-    else {
-      mainSink.text("Unfortunately there is no Image File of the graph - did the sca-cycles Plugin run first?");
+    } else {
+      mainSink.text(
+          "Unfortunately there is no Image File of the graph - did the sca-cycles Plugin run first?");
     }
 
     mainSink.body_();

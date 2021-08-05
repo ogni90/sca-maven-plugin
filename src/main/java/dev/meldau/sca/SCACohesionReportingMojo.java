@@ -74,9 +74,7 @@ public class SCACohesionReportingMojo extends AbstractMavenReport {
     return outputDirectory.toString();
   }
 
-  /**
-   * Build Cohesion Report with Maven Site Plugin
-   */
+  /** Build Cohesion Report with Maven Site Plugin */
   @Override
   protected void executeReport(Locale locale) throws MavenReportException {
     // initialize Logger

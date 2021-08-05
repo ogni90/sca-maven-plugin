@@ -78,9 +78,7 @@ public class SCACouplingCBOReportingMojo extends AbstractMavenReport {
     return outputDirectory.toString();
   }
 
-  /**
-   * Build CBO Report with Maven Site Plugin
-   */
+  /** Build CBO Report with Maven Site Plugin */
   @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
   @Override
   protected void executeReport(Locale locale) throws MavenReportException {
@@ -111,8 +109,7 @@ public class SCACouplingCBOReportingMojo extends AbstractMavenReport {
       }
       FileReader couplingCBOJSONFileReader = new FileReader(couplingCBOJSONFile);
       //noinspection unchecked
-      myMap =
-          (HashMap<String, Integer>) jsonParser.parse(couplingCBOJSONFileReader);
+      myMap = (HashMap<String, Integer>) jsonParser.parse(couplingCBOJSONFileReader);
       myLog.info("Map:" + myMap);
     } catch (FileNotFoundException e) {
       myLog.error(
@@ -197,13 +194,8 @@ public class SCACouplingCBOReportingMojo extends AbstractMavenReport {
     mainSink.tableRows_();
     mainSink.table_();
 
-    for (Map.Entry<String, Integer> classEntry :
-        Objects.requireNonNull(myMap).entrySet()) {
-      myLog.debug(
-          "Coupling CBO score for "
-              + classEntry.getKey()
-              + ": "
-              + classEntry.getValue());
+    for (Map.Entry<String, Integer> classEntry : Objects.requireNonNull(myMap).entrySet()) {
+      myLog.debug("Coupling CBO score for " + classEntry.getKey() + ": " + classEntry.getValue());
       mainSink.section2();
       mainSink.sectionTitle2();
       mainSink.text("Report for class " + classEntry.getKey() + ":");

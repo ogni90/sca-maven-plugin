@@ -35,8 +35,7 @@ import static java.util.Collections.max;
  */
 
 /**
- * This Mojo can be used for calculating code cohesion.
- * Cohesion is based on LCOM scores
+ * This Mojo can be used for calculating code cohesion. Cohesion is based on LCOM scores
  *
  * @author Ingo Meldau
  */
@@ -45,7 +44,11 @@ import static java.util.Collections.max;
 public class SCACohesionMojo extends AbstractMojo {
 
   Log myLog;
-
+  /**
+   * If this parameter is not zero, the build will break, if the metric goes beyond this threshold
+   */
+  @Parameter(name = "breakOnLCOM", required = true, defaultValue = "0")
+  int breakOnLCOM;
   /** Location of output directory */
   @Parameter(property = "project.build.directory", required = true, readonly = true)
   private File outputDirectory;
@@ -56,13 +59,7 @@ public class SCACohesionMojo extends AbstractMojo {
       defaultValue = "${project.build.directory}/sca-output")
   private File scaOutputDir;
 
-  /** If this parameter is not zero, the build will break, if the metric goes beyond this threshold*/
-  @Parameter(name = "breakOnLCOM", required = true, defaultValue = "0")
-  int breakOnLCOM;
-
-  /**
-   * Save cohesion results as JSON
-   */
+  /** Save cohesion results as JSON */
   void saveResultJSON(Map<String, Integer> myLcomScores) throws MojoExecutionException {
     String myPath = scaOutputDir.getAbsolutePath() + "/sca-cohesion-results.json";
     myLog.info("Writing Results JSON: " + myPath);
@@ -75,9 +72,7 @@ public class SCACohesionMojo extends AbstractMojo {
     }
   }
 
-  /**
-   * Calculates LCOM scores for all classes and saves the results as JSON
-   */
+  /** Calculates LCOM scores for all classes and saves the results as JSON */
   @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
@@ -119,6 +114,5 @@ public class SCACohesionMojo extends AbstractMojo {
     if (breakOnLCOM != 0 && max(lcomScores.values()) > breakOnLCOM) {
       throw new MojoFailureException("The threshold for the LCOM metric is exceeded.");
     }
-
   }
 }

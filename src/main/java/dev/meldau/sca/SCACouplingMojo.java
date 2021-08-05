@@ -8,7 +8,6 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.jgrapht.alg.util.Pair;
 import org.jgrapht.graph.DirectedMultigraph;
 import org.json.simple.JSONValue;
 
@@ -44,15 +43,15 @@ import static java.util.Collections.max;
 @SuppressFBWarnings({"DM_DEFAULT_ENCODING", "DM_DEFAULT_ENCODING"})
 @Mojo(name = "sca-coupling", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
 public class SCACouplingMojo extends AbstractMojo {
-  /** Location of the file. */
-  @Parameter(property = "project.build.directory", required = true, readonly = true)
-  private File outputDirectory;
   /** break threshold for CBO */
   @Parameter(name = "breakOnCBO", required = true, defaultValue = "0")
   int breakOnCBO;
   /** break threshold for Pair-CBO */
   @Parameter(name = "breakOnPairCBO", required = true, defaultValue = "0")
   int breakOnPairCBO;
+  /** Location of the file. */
+  @Parameter(property = "project.build.directory", required = true, readonly = true)
+  private File outputDirectory;
   /** sca output Directory */
   @Parameter(
       name = "scaOutputDir",
@@ -62,11 +61,8 @@ public class SCACouplingMojo extends AbstractMojo {
 
   private Log myLog;
 
-  /**
-   * Save CBO results as JSON
-   */
-  void saveCBOResultJSON(HashMap<String, Integer> myCBOScores)
-      throws MojoExecutionException {
+  /** Save CBO results as JSON */
+  void saveCBOResultJSON(HashMap<String, Integer> myCBOScores) throws MojoExecutionException {
     String myPath = scaOutputDir.getAbsolutePath() + "/sca-coupling-cbo-results.json";
     myLog.info("Writing Results JSON: " + myPath);
 
@@ -78,9 +74,7 @@ public class SCACouplingMojo extends AbstractMojo {
     }
   }
 
-  /**
-   * Save pairwise CBO results as JSON
-   */
+  /** Save pairwise CBO results as JSON */
   void savePairCBOResultJSON(ArrayList<ArrayList<String>> myCBOScores)
       throws MojoExecutionException {
     String myPath = scaOutputDir.getAbsolutePath() + "/sca-coupling-pair-cbo-results.json";
@@ -94,9 +88,7 @@ public class SCACouplingMojo extends AbstractMojo {
     }
   }
 
-  /**
-   * Calculates CBO and pairwise CBO values for all classes and saves the results as JSON
-   */
+  /** Calculates CBO and pairwise CBO values for all classes and saves the results as JSON */
   @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
@@ -137,15 +129,15 @@ public class SCACouplingMojo extends AbstractMojo {
 
     // Check if CBO Metric exceeds configured threshold
     if (breakOnCBO != 0) {
-        if (max(CBOValues.values()) > breakOnCBO) {
-          throw new MojoFailureException("The threshold for the CBO metric is exceeded.");
-        }
+      if (max(CBOValues.values()) > breakOnCBO) {
+        throw new MojoFailureException("The threshold for the CBO metric is exceeded.");
+      }
     }
 
     // Check if Pair-CBO Metric exceeds configured threshold
-    if (breakOnPairCBO != 0 ) {
+    if (breakOnPairCBO != 0) {
       for (ArrayList<String> values : PairCBOValues) {
-        if ( Integer.parseInt(values.get(2)) > breakOnPairCBO ) {
+        if (Integer.parseInt(values.get(2)) > breakOnPairCBO) {
           throw new MojoFailureException("The threshold for the Pair-CBO metric is exceeded.");
         }
       }

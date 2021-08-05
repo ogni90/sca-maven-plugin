@@ -53,8 +53,7 @@ public class CouplingMultiGraphGenerator {
   Log myLog;
 
   /**
-   * Generates directed multigraph from all files in classDir
-   * and adds debug information to myLog
+   * Generates directed multigraph from all files in classDir and adds debug information to myLog
    */
   public CouplingMultiGraphGenerator(File classDir, Log myLog) throws IOException {
     this.myLog = myLog;
@@ -63,9 +62,7 @@ public class CouplingMultiGraphGenerator {
     generateGraph();
   }
 
-  /**
-   * Generates directed multigraph from all files in classDir
-   */
+  /** Generates directed multigraph from all files in classDir */
   public CouplingMultiGraphGenerator(File classDir) throws IOException {
 
     ClassFileFinder classFileFinder = new ClassFileFinder(classDir);
@@ -73,9 +70,7 @@ public class CouplingMultiGraphGenerator {
     generateGraph();
   }
 
-  /**
-   * Generates directed multigraph
-   */
+  /** Generates directed multigraph */
   private void generateGraph() throws IOException {
 
     DirectedMultigraph<String, LabeledEdge> couplingGraph =
@@ -249,9 +244,7 @@ public class CouplingMultiGraphGenerator {
     return cleanString;
   }
 
-  /**
-   * Save directed multigraph as PNG and DOT
-   */
+  /** Save directed multigraph as PNG and DOT */
   @SuppressFBWarnings("DM_DEFAULT_ENCODING")
   public void saveGraph(File targetDir) throws IOException {
     DOTExporter<String, LabeledEdge> dotExporter = new DOTExporter<>(v -> v.replace("/", "_"));
@@ -320,7 +313,7 @@ public class CouplingMultiGraphGenerator {
     }
   }
 
-  /** @return couplingGraph  */
+  /** @return couplingGraph */
   public DirectedMultigraph<String, LabeledEdge> getGraph() {
     return couplingGraph;
   }

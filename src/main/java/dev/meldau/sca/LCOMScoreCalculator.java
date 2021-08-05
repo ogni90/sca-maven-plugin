@@ -33,8 +33,10 @@ import java.util.*;
  */
 
 /**
- * Implements LCOM Score Calculation (Lack Of Cohesion in Methods) as proposed by Hitz and Montazeri in 1995
+ * Implements LCOM Score Calculation (Lack Of Cohesion in Methods) as proposed by Hitz and Montazeri
+ * in 1995
  * https://www.researchgate.net/profile/Martin-Hitz/publication/2765140_Measuring_Product_Attributes_of_Object-Oriented_Systems/links/0912f51091f5fa52aa000000/Measuring-Product-Attributes-of-Object-Oriented-Systems.pdf
+ *
  * @author Ingo Meldau
  */
 @SuppressFBWarnings("DM_DEFAULT_ENCODING")
@@ -53,9 +55,7 @@ public class LCOMScoreCalculator {
     return LCOMScores;
   }
 
-  /**
-   * Calculate LCOM Scores in all CLASS_FILES and write them to LCOMScores
-   */
+  /** Calculate LCOM Scores in all CLASS_FILES and write them to LCOMScores */
   private void calculateScores() throws IOException {
 
     // Create Hashmap to return
@@ -161,9 +161,7 @@ public class LCOMScoreCalculator {
     // TODO:    saveResultJSON(myLCOMScores);
   }
 
-  /**
-   * Save LCOM graph as DOT and PNG
-   */
+  /** Save LCOM graph as DOT and PNG */
   public void saveGraph(File targetDir) throws IOException {
     DOTExporter<String, DefaultEdge> dotExporter = new DOTExporter<>(v -> v.replace("/", "_"));
     for (HashMap.Entry<String, Graph<String, DefaultEdge>> graphEntry : LCOMGraph.entrySet()) {

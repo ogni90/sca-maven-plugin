@@ -71,17 +71,18 @@ public class CBOCalculator {
         ArrayList<String> pairCBOValues = new ArrayList<>();
         pairCBOValues.add(CLASS_GRAPH.vertexSet().toArray()[i].toString());
         pairCBOValues.add(CLASS_GRAPH.vertexSet().toArray()[j].toString());
-        pairCBOValues.add(String.valueOf(
-            CLASS_GRAPH
-                    .getAllEdges(
-                        (String) CLASS_GRAPH.vertexSet().toArray()[i],
-                        (String) CLASS_GRAPH.vertexSet().toArray()[j])
-                    .size()
-                + CLASS_GRAPH
-                    .getAllEdges(
-                        (String) CLASS_GRAPH.vertexSet().toArray()[j],
-                        (String) CLASS_GRAPH.vertexSet().toArray()[i])
-                    .size()));
+        pairCBOValues.add(
+            String.valueOf(
+                CLASS_GRAPH
+                        .getAllEdges(
+                            (String) CLASS_GRAPH.vertexSet().toArray()[i],
+                            (String) CLASS_GRAPH.vertexSet().toArray()[j])
+                        .size()
+                    + CLASS_GRAPH
+                        .getAllEdges(
+                            (String) CLASS_GRAPH.vertexSet().toArray()[j],
+                            (String) CLASS_GRAPH.vertexSet().toArray()[i])
+                        .size()));
         pairCBOListOfLists.add(pairCBOValues);
       }
     }

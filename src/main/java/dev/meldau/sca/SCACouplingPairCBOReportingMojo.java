@@ -19,7 +19,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Objects;
 
 import static org.apache.maven.doxia.sink.Sink.JUSTIFY_LEFT;
 
@@ -75,9 +77,7 @@ public class SCACouplingPairCBOReportingMojo extends AbstractMavenReport {
     return outputDirectory.toString();
   }
 
-  /**
-   * Build pairwise CBO Report with Maven Site Plugin
-   */
+  /** Build pairwise CBO Report with Maven Site Plugin */
   @edu.umd.cs.findbugs.annotations.SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
   @Override
   protected void executeReport(Locale locale) throws MavenReportException {
@@ -194,8 +194,9 @@ public class SCACouplingPairCBOReportingMojo extends AbstractMavenReport {
     }
     mainSink.tableRows_();
     mainSink.table_();
-    Objects.requireNonNull(pairCBOList).sort((al1, al2) -> (Integer.parseInt(al2.get(2)) - (Integer.parseInt(al1.get(2)))));
-    for( ArrayList<String> arrayList : pairCBOList ) {
+    Objects.requireNonNull(pairCBOList)
+        .sort((al1, al2) -> (Integer.parseInt(al2.get(2)) - (Integer.parseInt(al1.get(2)))));
+    for (ArrayList<String> arrayList : pairCBOList) {
       mainSink.section2();
       mainSink.sectionTitle2();
       String sectionTitle = "Pair " + arrayList.get(0) + " and " + arrayList.get(1);
