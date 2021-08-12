@@ -110,7 +110,7 @@ public class CouplingMultiGraphGenerator {
         couplingGraph.addEdge(
             cleanInternalName(myClassNode.name),
             cleanInternalName(myClassNode.superName),
-            new LabeledEdge(LabeledEdge.ConnectionType.SUPERCLASS));
+            new LabeledEdge(ConnectionType.SUPERCLASS));
       }
 
       // check for instance variables
@@ -128,7 +128,7 @@ public class CouplingMultiGraphGenerator {
           couplingGraph.addEdge(
               cleanInternalName(myClassNode.name),
               cleanInternalName(field.desc),
-              new LabeledEdge(LabeledEdge.ConnectionType.INSTANCE_VARIABLE));
+              new LabeledEdge(ConnectionType.INSTANCE_VARIABLE));
         }
       }
 
@@ -158,7 +158,7 @@ public class CouplingMultiGraphGenerator {
               couplingGraph.addEdge(
                   cleanInternalName(myClassNode.name),
                   cleanInternalName(methCall.owner),
-                  new LabeledEdge(LabeledEdge.ConnectionType.CALLS_METHOD));
+                  new LabeledEdge(ConnectionType.CALLS_METHOD));
             }
           }
 
@@ -183,7 +183,7 @@ public class CouplingMultiGraphGenerator {
               couplingGraph.addEdge(
                   cleanInternalName(myClassNode.name),
                   cleanInternalName(fieldInsnNode.owner),
-                  new LabeledEdge(LabeledEdge.ConnectionType.ACCESS_PUBLIC_VARIABLE));
+                  new LabeledEdge(ConnectionType.ACCESS_PUBLIC_VARIABLE));
             }
           }
         }
@@ -204,7 +204,7 @@ public class CouplingMultiGraphGenerator {
             couplingGraph.addEdge(
                 cleanInternalName(myClassNode.name),
                 cleanInternalName(myLocalVariableNode.desc),
-                new LabeledEdge(LabeledEdge.ConnectionType.LOCAL_VARIABLE));
+                new LabeledEdge(ConnectionType.LOCAL_VARIABLE));
           }
         }
 
@@ -228,7 +228,7 @@ public class CouplingMultiGraphGenerator {
             couplingGraph.addEdge(
                 cleanInternalName(myClassNode.name),
                 cleanInternalName(parameterType.getInternalName()),
-                new LabeledEdge(LabeledEdge.ConnectionType.PARAMETER_TYPE));
+                new LabeledEdge(ConnectionType.PARAMETER_TYPE));
           }
         }
       }

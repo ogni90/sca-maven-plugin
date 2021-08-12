@@ -89,13 +89,4 @@ public class LabeledEdge extends DefaultEdge {
     return "(" + getSource() + " : " + getTarget() + " : " + getConnectionType() + ")";
   }
 
-  /** Enum of all connection types */
-  public enum ConnectionType {
-    SUPERCLASS,
-    INSTANCE_VARIABLE,
-    CALLS_METHOD,
-    LOCAL_VARIABLE,
-    PARAMETER_TYPE,
-    ACCESS_PUBLIC_VARIABLE,
-  }
 }

@@ -48,7 +48,7 @@ class CouplingMultiGraphGeneratorTest {
     for (LabeledEdge labeledEdge : labeledEdges) {
       if (labeledEdge.getSource().equals("dev/meldau/myjavamvntest/App")
           && labeledEdge.getTarget().equals("dev/meldau/myjavamvntest/SuperThing")
-          && labeledEdge.getConnectionType() == LabeledEdge.ConnectionType.LOCAL_VARIABLE) {
+          && labeledEdge.getConnectionType() == ConnectionType.LOCAL_VARIABLE) {
         edgeCounter++;
       }
     }
