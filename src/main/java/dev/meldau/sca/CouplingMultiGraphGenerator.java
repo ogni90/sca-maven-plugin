@@ -75,6 +75,7 @@ public class CouplingMultiGraphGenerator {
     DirectedMultigraph<String, LabeledEdge> couplingGraph =
         new DirectedMultigraph<>(LabeledEdge.class);
 
+    /* This needs improvement, the for loop could be its own method */
     for (File classFile : classFiles) {
       InputStream classFileIS = new FileInputStream(classFile);
       ClassNode myClassNode = new ClassNode();
@@ -280,7 +281,7 @@ public class CouplingMultiGraphGenerator {
       // g.nodes().forEach(node -> node.links().forEach(link ->
       // link.add(Label.of(link.get("label").toString().toLowerCase()).external())));
 
-      // Remove Label-Text for better viewabilty
+      // Remove Label-Text for better viewability
       g.nodes().forEach(node -> node.links().forEach(link -> link.add(Label.of(""))));
 
       Graphviz.fromGraph(g)
@@ -307,7 +308,6 @@ public class CouplingMultiGraphGenerator {
       case "ACCESS_PUBLIC_VARIABLE":
         return Color.RED;
       default:
-        System.out.println(connectionType);
         return Color.BLACK;
     }
   }
