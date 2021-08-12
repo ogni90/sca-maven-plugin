@@ -51,9 +51,6 @@ public class SCACyclesReportingMojo extends AbstractMavenReport {
       required = true)
   protected File outputDirectory;
 
-  @Parameter(defaultValue = "${project.build.directory}", readonly = true, required = true)
-  protected File pluginOutputDirectory;
-
   @Parameter(defaultValue = "${project}", readonly = true, required = true)
   private MavenProject project;
   /** sca output Directory */
@@ -117,15 +114,11 @@ public class SCACyclesReportingMojo extends AbstractMavenReport {
     File cyclesGraph =
         new File(
             scaOutputDir.getAbsolutePath()
-                + "/cycles/"
-                + pluginOutputDirectory.getName()
-                + "_clean_colored.png");
+                + "/cycles/classes_clean_colored.png");
     File cyclesGraphCopy =
         new File(
             outputDirectory.getAbsolutePath()
-                + "/"
-                + pluginOutputDirectory.getName()
-                + "_clean_colored.png");
+                + "/classes_clean_colored.png");
 
     try {
       if (cyclesGraphCopy.exists()) {
