@@ -112,10 +112,11 @@ public class SCACyclesMojo extends AbstractMojo {
         f.mkdir();
       }
     }
+    File classDir = new File(outputDirectory.getAbsolutePath() + "/classes");
 
     // Create Graph
     JdepsGraphCreator jdepsGraphCreator =
-        new JdepsGraphCreator(outputDirectory, getScaCyclesOutputDir());
+        new JdepsGraphCreator(classDir, getScaCyclesOutputDir());
 
     // Check if graph has cycles - if so calculate FAS
     if (jdepsGraphCreator.hasCycles()) {

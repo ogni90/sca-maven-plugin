@@ -64,7 +64,6 @@ public class CouplingMultiGraphGenerator {
 
   /** Generates directed multigraph from all files in classDir */
   public CouplingMultiGraphGenerator(File classDir) throws IOException {
-
     ClassFileFinder classFileFinder = new ClassFileFinder(classDir);
     classFiles = classFileFinder.getClassFiles();
     generateGraph();

@@ -179,22 +179,6 @@
         </dependencies>
 
       </plugin>
-      <plugin>
-        <groupId>dev.meldau.sca</groupId>
-        <artifactId>sca-maven-plugin</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <executions>
-          <execution>
-            <phase>test</phase>
-            <goals>
-              <goal>sca-cohesion</goal>
-              <goal>sca-coupling</goal>
-              <goal>sca-cycles</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
     </plugins>
   </build>
   <properties>
