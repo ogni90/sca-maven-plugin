@@ -1,4 +1,4 @@
-# sca-maven-plugin
+****# sca-maven-plugin
 * [Cyclic Dependencies](#cyclic-dependencies)
 * [Cohesion Metric (LCOM)](#cohesion-metric-lcom)
 * [Coupling Metrics](#coupling-metrics)
@@ -13,7 +13,7 @@
 * [Using the plugin Results](#using-the-plugin-results)
 
 This Maven plugin performs statical program analysis on Java projects.
-(In German: "Statische Code Analyse" - hence the name of the plugin).
+(In German: "Statische Code-Analyse" - hence the name of the plugin).
 
 It performs these major tasks:
 * Finding cyclic dependencies in Java code and providing a nearly optimal set of dependencies
@@ -31,6 +31,8 @@ to determine a set of edges (dependencies) to remove.
 
 ## Cohesion Metric (LCOM)
 The plugin calculates a per class score for *L*ack of *CO*hesion in *M*ethods.
+This metric is calculated by finding connected sets of methods in classes. Methods are connected if
+they share instance variables or call each other. The number of connected sets is the LCOM score.
 The lower this number is, the better.
 
 ## Coupling Metrics
@@ -54,7 +56,7 @@ The following requirements must be met, to be able to use this plugin:
 
 ## Installation
 
-To install the Plugin, Download the latest release from the GitHub Releases Page.
+To install the Plugin, download the latest release from the GitHub Releases Page.
 To install the JAR-File to your local maven repository use this command:
 ```
 mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=sca-maven-plugin-1.0-SNAPSHOT.jar
@@ -123,7 +125,7 @@ the reporting section in the pom.xml file.
   </reporting>
 </project>
 ```
-This can be limited to specific goals by adding the "goal" tag. The maven site lifecycle can be called by invoking
+This can be limited to specific goals by adding the "goal" tag. The Maven site lifecycle can be called by invoking
 `mvn site`.
 
 ## Configuration
