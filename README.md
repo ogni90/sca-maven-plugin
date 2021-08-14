@@ -11,6 +11,7 @@
   * [Usage by integration in pom.xml](#usage-by-integration-in-pomxml)
 * [Configuration](#configuration)
 * [Using the plugin Results](#using-the-plugin-results)
+* [JavaDoc Documentation](#javadoc-documentation)
 
 This Maven plugin performs statical program analysis on Java projects.
 (In German: "Statische Code-Analyse" - hence the name of the plugin).
@@ -176,3 +177,7 @@ The following is an example of how this directory could look like:
 ├── sca-coupling-cbo-results.json # JSON-File listing the CBO-scores
 └── sca-coupling-pair-cbo-results.json # JSON-File listing the Pair-CBO-scores
 ```
+
+## JavaDoc Documentation
+If you want to program based on this plugin, or should you want to improve it, there is technical documentation 
+available. You can find the JavaDoc output of the sca-maven-plugin at https://ogni90.github.io/sca-maven-plugin/site/apidocs
