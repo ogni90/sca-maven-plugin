@@ -108,7 +108,7 @@ public class SCACouplingMojo extends AbstractMojo {
     try {
       CouplingMultiGraphGenerator couplingMultiGraphGenerator =
           new CouplingMultiGraphGenerator(
-              new File(outputDirectory.getAbsolutePath() + "/classes"), myLog);
+              new File(outputDirectory.getAbsolutePath() + "/classes"));
       DirectedMultigraph<String, LabeledEdge> couplingMultiGraph =
           couplingMultiGraphGenerator.getGraph();
       // Save graph as DOT File and Image for reporting
