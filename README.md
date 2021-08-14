@@ -48,7 +48,7 @@ The lower this number is, the better.
 ### Pair Coupling Between Objects (Pair-CBO)
 Since the CBO Metric has its shortcomings it is accompanied by the Pair-CBO metric.
 This metric does not count connections from a single class, but counts the connections between
-all pairs of Classes. This way it should be easier, to find which classes exactly are coupled too strongly.
+pairs of classes. This way it should be easier, to find which classes exactly are coupled too strongly.
 Again, the lower this number is, the better.
 
 ## Requirements
