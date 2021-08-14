@@ -152,11 +152,9 @@ public class SCACohesionReportingMojo extends AbstractMavenReport {
       }
 
       myLog.debug("Cohesion Score for " + classEntry.getKey() + ": " + classEntry.getValue());
-      String[] splitClassName = classEntry.getKey().split("/");
-      String shortClassName = splitClassName[splitClassName.length - 1];
       mainSink.section1();
       mainSink.sectionTitle1();
-      mainSink.text("Report for class " + shortClassName + ":");
+      mainSink.text("Report for class " + classEntry.getKey() + ":");
       mainSink.sectionTitle1_();
       mainSink.paragraph();
       mainSink.text("LCOM Score: " + classEntry.getValue());
