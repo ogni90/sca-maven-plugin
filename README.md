@@ -11,11 +11,11 @@
   * [Usage from command line](#usage-from-command-line)
   * [Usage by integration in pom.xml](#usage-by-integration-in-pomxml)
 * [Configuration](#configuration)
-* [Using the plugin Results](#using-the-plugin-results)
+* [Using the plugin results](#using-the-plugin-results)
 * [JavaDoc documentation](#javadoc-documentation)
 
 This Maven plugin performs statical program analysis on Java projects.
-(In German: "Statische Code-Analyse" - hence the name of the plugin).
+(in german: "Statische Code-Analyse" - hence the name of the plugin).
 
 It performs these major tasks:
 * Finding cyclic dependencies in Java code and providing a nearly optimal set of dependencies
@@ -38,7 +38,7 @@ they share instance variables or call each other. The number of connected sets i
 The lower this number is, the better.
 
 ## Coupling Metrics
-To be able to calculate coupling metrics, the Plugin builds a graph of all classes (vertices) and
+To be able to calculate coupling metrics, the plugin builds a graph of all classes (vertices) and
 connections between classes (edges) in the tested software.
 
 ### Coupling Between Objects(CBO)
@@ -48,17 +48,17 @@ The lower this number is, the better.
 ### Pair Coupling Between Objects (Pair-CBO)
 Since the CBO Metric has its shortcomings it is accompanied by the Pair-CBO metric.
 This metric does not count connections from a single class, but counts the connections between
-all pairs of Classes. This way it should be easier to find out which classes exactly are coupled too strongly.
-Again, the lower this number ist, the better.
+all pairs of Classes. This way it should be easier, to find which classes exactly are coupled too strongly.
+Again, the lower this number is, the better.
 
 ## Requirements
 The following requirements must be met, to be able to use this plugin:
-* Your project needs to be managed in maven (version 3 or higher)
-* The computer running maven must have the Java Development Kit (JDK) installed
+* Your project needs to be managed in maven (version 3 or newer)
+* The computer running maven must have the Java Development Kit (JDK) installed (version 11 or newer)
 
 ## Installation
 
-To install the Plugin, download the latest release from the GitHub Releases Page.
+To install the plugin, download the latest release from the GitHub Releases Page.
 To install the JAR-File to your local maven repository use this command:
 ```
 mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=sca-maven-plugin-1.0-SNAPSHOT.jar
@@ -158,7 +158,7 @@ configuration to the pom.xml file. The possible configurations are shown in the 
 
 ## Using the plugin results
 The plugin saves all its results in the sca-output directory within the maven target.
-Scores are available as JSON-Files while generated Graphs are persisted as DOT-Files and PNG-Files.
+Scores are available as JSON-Files while generated graphs are persisted as DOT-Files and PNG-Files.
 
 The following is an example of how this directory could look like:
 ```
