@@ -4,7 +4,7 @@
   <groupId>dev.meldau.sca</groupId>
   <artifactId>sca-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>v0.9</version>
   <name>sca-maven-plugin Maven Mojo</name>
   <description>Maven Plugin that performs statical program analysis.</description>
   <url>https://github.com/ogni90/sca-maven-plugin</url>
